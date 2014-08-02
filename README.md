@@ -15,7 +15,7 @@ This module install Tomcat with puppet
 
 ## <a name='Installation'>Installation</a>
 
-Clone this repository in a servicemix directory in your puppet module directory
+Clone this repository in a tomcat directory in your puppet module directory
 
 	git clone https://github.com/ancosen/puppet-tomcat-module tomcat
 
