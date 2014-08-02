@@ -7,8 +7,7 @@ define tomcat::setup (
   $installdir = undef
   ) { 
     
-  # Validate parameters presence 
-  
+  # Validate parameters presence   
   if ($family == undef) {
     fail('family parameter must be set')
   }
@@ -53,6 +52,18 @@ define tomcat::setup (
     $defined_tmpdir = $tmpdir
   }
   
+  if ($extension == ".zip"){
+    $extractor_command = "unzip"
+    $extractor_option_source = ""
+    $extractor_option_dir = "-d"
+  }
+  
+  if ($extension == ".tar.gz"){
+    $extractor_command = "tar"
+    $extractor_option_source = "-xzvf"
+    $extractor_option_dir = "-C"
+  }
+  
   $tomcat = "apache-tomcat"
   
   if ($mode == "local"){
@@ -60,10 +71,11 @@ define tomcat::setup (
 		      ensure => present,
 		      source => "puppet:///modules/tomcat/${tomcat}-${family}.0.${update_version}${extension}" }
   
-    exec { 'extract_tomcat': 
-          command => "tar -xzvf ${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension} -C ${defined_tmpdir}",
+  exec { 'extract_tomcat': 
+          command => "${extractor_command} ${extractor_option_source} ${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension} ${extractor_option_dir} ${defined_tmpdir}",
           require => [ File[ "${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension}"], 
-                       Package['tar'] ], 
+                       Package['tar'],
+                       Package['unzip'] ], 
           alias => extract_tomcat } 
   }
   elsif ($mode == "web"){
@@ -75,10 +87,11 @@ define tomcat::setup (
           unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}/",
           timeout => 1000 }    
           
-    exec { 'extract_tomcat': 
-          command => "tar -xzvf ${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension} -C ${defined_tmpdir}",
+  exec { 'extract_tomcat': 
+          command => "${extractor_command} ${extractor_option_source} ${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension} ${extractor_option_dir} ${defined_tmpdir}",
           require => [ Exec[ 'retrieve_tomcat'], 
-                       Package['tar'] ], 
+                       Package['tar'],
+                       Package['unzip'] ], 
           alias => extract_tomcat } 
   } 
                      

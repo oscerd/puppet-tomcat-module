@@ -1,0 +1,1 @@
+Put your Tomcat package in this folder, don't rename it. In the java::setup specify the family (e.g. "6", "7", "8"), the update version (e.g. "40", "55", "60") and the installation mode ("web" or "local").
