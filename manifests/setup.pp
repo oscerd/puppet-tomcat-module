@@ -6,7 +6,9 @@ define tomcat::setup (
   $tmpdir = undef,
   $installdir = undef
   ) { 
-    
+  
+  include tomcat::params
+  
   # Validate parameters presence   
   if ($family == undef) {
     fail('family parameter must be set')
@@ -106,4 +108,12 @@ define tomcat::setup (
           require => [ File[ tomcat_home ], 
                        Exec[ extract_tomcat ] ],
                     unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}/" }
+                    
+  file { "serverxml":
+        path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}/conf/server.xml",
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0644',
+        content => template('tomcat/serverxml.erb'),
+  }
 }
