@@ -5,6 +5,14 @@
 Exec {
   path => ["/bin/", "/sbin/", "/usr/bin/", "/usr/sbin/"] }
 
+package { 'tar':
+      ensure => installed
+  }
+
+package { 'unzip':
+      ensure => installed
+  }
+
 tomcat::setup { "tomcat":
   family => "7",
   update_version => "55",

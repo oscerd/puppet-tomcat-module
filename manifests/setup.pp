@@ -77,14 +77,15 @@ define tomcat::setup (
   
   exec { 'extract_tomcat': 
           command => "${extractor_command} ${extractor_option_source} ${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension} ${extractor_option_dir} ${defined_tmpdir}",
-          require => [ File[ "${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension}"], 
-                       Package['tar'],
-                       Package['unzip'] ], 
+          require => [ File[ "${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension}"],
+                       Package ['tar'],
+                       Package['unzip']
+          ], 
           alias => extract_tomcat } 
   }
   elsif ($mode == "web"){
     
-  $source = "http://apache.fastbull.org/tomcat/tomcat-7/v7.0.55/bin/${tomcat}-${family}.0.${update_version}${extension}"
+  $source = "http://apache.fastbull.org/tomcat/tomcat-${family}/v${family}.0.${update_version}/bin/${tomcat}-${family}.0.${update_version}${extension}"
 
   exec { 'retrieve_tomcat': 
           command => "wget -q ${source} -P ${defined_tmpdir}",
@@ -93,9 +94,7 @@ define tomcat::setup (
           
   exec { 'extract_tomcat': 
           command => "${extractor_command} ${extractor_option_source} ${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension} ${extractor_option_dir} ${defined_tmpdir}",
-          require => [ Exec[ 'retrieve_tomcat'], 
-                       Package['tar'],
-                       Package['unzip'] ], 
+          require => [ Exec[ 'retrieve_tomcat'] ], 
           alias => extract_tomcat } 
   } 
                      
@@ -109,7 +108,7 @@ define tomcat::setup (
           command => "mv ${defined_tmpdir}${tomcat}-${family}.0.${update_version}/ ${defined_installdir}",
           require => [ File[ tomcat_home ], 
                        Exec[ extract_tomcat ] ],
-                    unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}/" }
+          unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}/" }
                     
   file { "serverxml":
         path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::server_xml}",
@@ -118,4 +117,9 @@ define tomcat::setup (
         mode    => '0644',
         content => template('tomcat/serverxml.erb'),
   }
+  
+  exec { 'clean_tomcat': 
+        command => "rm -rf ${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension}",
+        require => Exec['move_tomcat'],
+        logoutput => "false" }
 }

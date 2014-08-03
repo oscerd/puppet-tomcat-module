@@ -35,10 +35,19 @@ folder. The module will do the same operations without download the package.
 	  }
 
 It's important to define a global search path for the `exec` resource to make module work. 
-This should usually be placed in `manifests/site.pp`:
+This should usually be placed in `manifests/site.pp`. It is also important to make sure `unzip` and `tar` command 
+are installed on the target system:
 
 	Exec {
 	  path => "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+	}
+
+	package { 'tar':
+	  ensure => installed
+	}
+
+	package { 'unzip':
+	  ensure => installed
 	}
 
 ## <a name='Testing'>Testing</a>
