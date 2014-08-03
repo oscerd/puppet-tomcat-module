@@ -1,3 +1,4 @@
+# tomcat::setup defines the setup stage of Tomcat installation
 define tomcat::setup (
   $family = undef,
   $update_version = undef,
@@ -8,6 +9,7 @@ define tomcat::setup (
   ) { 
   
   include tomcat::params
+  include tomcat::config
   
   # Validate parameters presence   
   if ($family == undef) {
@@ -110,7 +112,7 @@ define tomcat::setup (
                     unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}/" }
                     
   file { "serverxml":
-        path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}/conf/server.xml",
+        path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${::server_xml}",
         owner   => 'root',
         group   => 'root',
         mode    => '0644',
