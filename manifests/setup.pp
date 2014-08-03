@@ -112,7 +112,7 @@ define tomcat::setup (
                     unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}/" }
                     
   file { "serverxml":
-        path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${::server_xml}",
+        path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::server_xml}",
         owner   => 'root',
         group   => 'root',
         mode    => '0644',
