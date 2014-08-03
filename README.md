@@ -21,7 +21,7 @@ Clone this repository in a tomcat directory in your puppet module directory
 
 ## <a name='Usage'>Usage</a>
 
-If you include the servicemix class by setting mode to `web` the module will download the package, extract it and move it 
+If you include the tomcat::setup class by setting mode to `web` the module will download the package, extract it and move it 
 in a specific directory. If you set the mode `local` the tomcat package must be place in `/tomcat/files/` 
 folder. The module will do the same operations without download the package.
 
