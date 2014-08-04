@@ -17,7 +17,7 @@ tomcat::setup { "tomcat":
   family => "7",
   update_version => "55",
   extension => ".zip",
-  mode => "local",
+  source_mode => "local",
   installdir => "/opt/",
   tmpdir => "/tmp/"
   }

@@ -21,15 +21,15 @@ Clone this repository in a tomcat directory in your puppet module directory
 
 ## <a name='Usage'>Usage</a>
 
-If you include the tomcat::setup class by setting mode to `web` the module will download the package, extract it and move it 
-in a specific directory. If you set the mode `local` the tomcat package must be place in `/tomcat/files/` 
+If you include the tomcat::setup class by setting source_mode to `web` the module will download the package, extract it and move it 
+in a specific directory. If you set the source_mode `local` the tomcat package must be place in `/tomcat/files/` 
 folder. The module will do the same operations without download the package.
 
 	tomcat::setup { "tomcat":
 	  family => "7",
 	  update_version => "55",
 	  extension => ".zip",
-	  mode => "local",
+	  source_mode => "local",
 	  installdir => "/opt/",
 	  tmpdir => "/tmp/"
 	  }

@@ -3,7 +3,7 @@ define tomcat::setup (
   $family = undef,
   $update_version = undef,
   $extension = undef,
-  $mode = undef,
+  $source_mode = undef,
   $tmpdir = undef,
   $installdir = undef
   ) { 
@@ -24,7 +24,7 @@ define tomcat::setup (
     fail('Extension parameter must be set')
   }
   
-  if ($mode == undef) {
+  if ($source_mode == undef) {
     fail('mode parameter must be set')
   }
   
@@ -38,7 +38,7 @@ define tomcat::setup (
     fail('Extension parameter must be ".tar.gz" or "zip"')
   }
   
-  if (($mode != 'web') and ($mode != 'local')) {
+  if (($source_mode != 'web') and ($source_mode != 'local')) {
     fail('mode parameter must have value "local" or "web"')
   }
   
@@ -70,7 +70,7 @@ define tomcat::setup (
   
   $tomcat = "apache-tomcat"
   
-  if ($mode == "local"){
+  if ($source_mode == "local"){
   file { "${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension}":
 		      ensure => present,
 		      source => "puppet:///modules/tomcat/${tomcat}-${family}.0.${update_version}${extension}" }
@@ -83,7 +83,7 @@ define tomcat::setup (
           ], 
           alias => extract_tomcat } 
   }
-  elsif ($mode == "web"){
+  elsif ($source_mode == "web"){
     
   $source = "http://apache.fastbull.org/tomcat/tomcat-${family}/v${family}.0.${update_version}/bin/${tomcat}-${family}.0.${update_version}${extension}"
 
