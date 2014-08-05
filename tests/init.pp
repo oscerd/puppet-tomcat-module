@@ -19,6 +19,7 @@ tomcat::setup { "tomcat":
   extension => ".zip",
   source_mode => "local",
   installdir => "/opt/",
-  tmpdir => "/tmp/"
+  tmpdir => "/tmp/",
+  install_mode => "custom"
   }
 
