@@ -6,6 +6,7 @@ Puppet Tomcat Module
   1. [Introduction](#Introduction)
   1. [Installation](#Installation)
   1. [Usage](#Usage)
+  1. [Parameters](#Parameters)
   1. [Testing](#Testing)
   1. [Contributing](#Contributing)
 
@@ -31,7 +32,8 @@ folder. The module will do the same operations without download the package.
 	  extension => ".zip",
 	  source_mode => "local",
 	  installdir => "/opt/",
-	  tmpdir => "/tmp/"
+	  tmpdir => "/tmp/",
+	  install_mode => "custom"
 	  }
 
 It's important to define a global search path for the `exec` resource to make module work. 
@@ -49,6 +51,18 @@ are installed on the target system:
 	package { 'unzip':
 	  ensure => installed
 	}
+
+## <a name='Parameters'>Parameters</a>
+
+The Puppet Tomcat module use the following parameters in his setup
+
+*  __Family__: Possible values of Apache Tomcat version _6_, _7_, _8_ 
+*  __Update Version__: The update version
+*  __Extension__: The file extension, possible values _.zip_ and _.tar.gz_
+*  __Source Mode__: The source mode, possible values _local_ and _web_. Setting _local_ make module search the package in `tomcat/files/` folder. Setting mode _web_ make the module download the specified package
+*  __Install Directory__: The directory where the Apache Tomcat will be installed (default is `/opt/`)
+*  __Temp Directory__: The directory where the Apache Tomcat package will be extracted (default is `/tmp/`)
+*  __Install Mode__: The installation mode, possible values _clean_ and _custom_. With install mode _clean_ the module will only install Apache Tomcat, while with install mode _custom_ the module will install Apache Tomcat with a customizable version of `server.xml`
 
 ## <a name='Testing'>Testing</a>
 

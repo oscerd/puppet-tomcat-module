@@ -5,7 +5,8 @@ define tomcat::setup (
   $extension = undef,
   $source_mode = undef,
   $tmpdir = undef,
-  $installdir = undef
+  $installdir = undef,
+  $install_mode = undef
   ) { 
   
   include tomcat::params
@@ -28,6 +29,10 @@ define tomcat::setup (
     fail('mode parameter must be set')
   }
   
+  if ($install_mode == undef) {
+    fail('install mode parameter must be set')
+  }
+  
   # Validate parameters  
   
   if (($family != '6') and ($family != '7') and ($family != '8')) {
@@ -40,6 +45,10 @@ define tomcat::setup (
   
   if (($source_mode != 'web') and ($source_mode != 'local')) {
     fail('mode parameter must have value "local" or "web"')
+  }
+  
+  if (($install_mode != 'clean') and ($install_mode != 'custom')) {
+    fail('install mode parameter must have value "clean" or "custom"')
   }
   
   if ($installdir == undef){
@@ -83,8 +92,7 @@ define tomcat::setup (
           ], 
           alias => extract_tomcat } 
   }
-  elsif ($source_mode == "web"){
-    
+  elsif ($source_mode == "web"){ 
   $source = "http://apache.fastbull.org/tomcat/tomcat-${family}/v${family}.0.${update_version}/bin/${tomcat}-${family}.0.${update_version}${extension}"
 
   exec { 'retrieve_tomcat': 
@@ -109,13 +117,14 @@ define tomcat::setup (
           require => [ File[ tomcat_home ], 
                        Exec[ extract_tomcat ] ],
           unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}/" }
-                    
+  
+  if ($install_mode == "custom"){                   
   file { "serverxml":
         path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::server_xml}",
         owner   => 'root',
         group   => 'root',
         mode    => '0644',
-        content => template('tomcat/serverxml.erb'),
+        content => template('tomcat/serverxml.erb') }      
   }
   
   exec { 'clean_tomcat': 
