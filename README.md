@@ -7,6 +7,7 @@ Puppet Tomcat Module
   1. [Installation](#Installation)
   1. [Usage](#Usage)
   1. [Parameters](#Parameters)
+  1. [Customization](#Customization)
   1. [Testing](#Testing)
   1. [Contributing](#Contributing)
 
@@ -63,6 +64,28 @@ The Puppet Tomcat module use the following parameters in his setup
 *  __Install Directory__: The directory where the Apache Tomcat will be installed (default is `/opt/`)
 *  __Temp Directory__: The directory where the Apache Tomcat package will be extracted (default is `/tmp/`)
 *  __Install Mode__: The installation mode, possible values _clean_ and _custom_. With install mode _clean_ the module will only install Apache Tomcat, while with install mode _custom_ the module will install Apache Tomcat with a customizable version of `server.xml`
+
+## <a name='Customization'>Customization</a>
+
+When using the _custom_ installation mode, the module will use the template `templates/serverxml.erb` to build a `server.xml` custom file. The module will use the following parameters (liste in tomcat::params class):
+
+	# Set http port in serverxml.erb
+	$http_port = "8082"
+		  
+	# Set https port in serverxml.erb
+	$https_port = "8083"
+		  
+	# Set ajp port in serverxml.erb
+	$ajp_port = "8007"
+		  
+	# Set shutdown port in serverxml.erb
+	$shutdown_port = "8001"
+		  
+	# Set connection timeout in http connector in serverxml.erb
+	$http_connection_timeout = "20000"
+		  
+	# Set max threads in https connector in serverxml.erb
+	$https_max_threads = "150"
 
 ## <a name='Testing'>Testing</a>
 
