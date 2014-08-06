@@ -4,11 +4,23 @@
 
 class tomcat::params{
   
-  #Server.xml parameters
+  # Server.xml parameters
+  
+  # Set http port in serverxml.erb
   $http_port = "8082"
+  
+  # Set https port in serverxml.erb
   $https_port = "8083"
+  
+  # Set ajp port in serverxml.erb
   $ajp_port = "8007"
+  
+  # Set shutdown port in serverxml.erb
   $shutdown_port = "8001"
+  
+  # Set connection timeout in http connector in serverxml.erb
   $http_connection_timeout = "20000"
+  
+  # Set max threads in https connector in serverxml.erb
   $https_max_threads = "150"
 }
