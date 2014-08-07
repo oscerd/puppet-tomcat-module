@@ -23,4 +23,24 @@ class tomcat::params{
   
   # Set max threads in https connector in serverxml.erb
   $https_max_threads = "150"
+  
+  # Datasource
+  
+  # Set Name
+  $ds_resource_name = ""
+
+  # Set MaxActive
+  $ds_max_active = ""
+  
+  # Set MaxIdle
+  $ds_max_idle = ""
+  
+  # Set MaxWait
+  $ds_max_wait = ""
+  
+  # Set username
+  $ds_username = ""
+
+  # Set password
+  $ds_password = ""
 }
