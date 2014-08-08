@@ -20,6 +20,7 @@ tomcat::setup { "tomcat":
   source_mode => "local",
   installdir => "/opt/",
   tmpdir => "/tmp/",
-  install_mode => "custom"
+  install_mode => "custom",
+  data_source => "yes"
   }
 

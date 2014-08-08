@@ -6,10 +6,12 @@ define tomcat::setup (
   $source_mode = undef,
   $tmpdir = undef,
   $installdir = undef,
-  $install_mode = undef
+  $install_mode = undef,
+  $data_source = undef
   ) { 
   
   include tomcat::params
+  include tomcat::data_source
   include tomcat::config
   
   # Validate parameters presence   
@@ -33,6 +35,10 @@ define tomcat::setup (
     fail('install mode parameter must be set')
   }
   
+  if ($data_source == undef) {
+    fail('data source parameter must be set')
+  }
+  
   # Validate parameters  
   
   if (($family != '6') and ($family != '7') and ($family != '8')) {
@@ -49,6 +55,10 @@ define tomcat::setup (
   
   if (($install_mode != 'clean') and ($install_mode != 'custom')) {
     fail('install mode parameter must have value "clean" or "custom"')
+  }
+  
+  if (($data_source != 'yes') and ($data_source != 'no')) {
+    fail('data source parameter must have value "yes" or "no"')
   }
   
   if ($installdir == undef){
@@ -118,13 +128,31 @@ define tomcat::setup (
                        Exec[ extract_tomcat ] ],
           unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}/" }
   
-  if ($install_mode == "custom"){                   
-  file { "serverxml":
-        path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::server_xml}",
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0644',
-        content => template('tomcat/serverxml.erb') }      
+  if ($install_mode == "custom"){   
+	    
+	    if ($data_source == "no"){                
+		    file { "serverxml":
+		        path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::server_xml}",
+		        owner   => 'root',
+		        group   => 'root',
+		        mode    => '0644',
+		        content => template('tomcat/serverxml.erb') } 
+	     } elsif ($data_source == "yes"){
+	          file { "serverxml":
+            path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::server_xml}",
+            owner   => 'root',
+            group   => 'root',
+            mode    => '0644',
+            content => template('tomcat/serverdatasourcexml.erb') }
+            
+            file { "contextxml":
+            path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::context_xml}",
+            owner   => 'root',
+            group   => 'root',
+            mode    => '0644',
+            content => template('tomcat/context.erb') }  
+	     }
+	          
   }
   
   exec { 'clean_tomcat': 
