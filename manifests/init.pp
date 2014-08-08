@@ -14,7 +14,9 @@
 #	  extension => ".zip",
 #	  mode => "local",
 #	  installdir => "/opt/",
-#	  tmpdir => "/tmp/"
+#	  tmpdir => "/tmp/",
+#   install_mode => "custom",
+#   data_source => "yes"
 #	  }
 #
 # Refer to the module README for documentation

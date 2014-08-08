@@ -25,7 +25,7 @@ Clone this repository in a tomcat directory in your puppet module directory
 
 If you include the tomcat::setup class by setting source_mode to `web` the module will download the package, extract it and move it 
 in a specific directory. If you set the source_mode `local` the tomcat package must be place in `/tomcat/files/` 
-folder. The module will do the same operations without download the package.
+folder. The module will do the same operations without download the package. For more information about the parameters definition see [Parameters](#Parameters)
 
 	tomcat::setup { "tomcat":
 	  family => "7",
@@ -34,7 +34,8 @@ folder. The module will do the same operations without download the package.
 	  source_mode => "local",
 	  installdir => "/opt/",
 	  tmpdir => "/tmp/",
-	  install_mode => "custom"
+	  install_mode => "custom",
+	  data_source => "yes"
 	  }
 
 It's important to define a global search path for the `exec` resource to make module work. 
