@@ -44,6 +44,26 @@
               description="User database that can be updated and saved"
               factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
               pathname="conf/tomcat-users.xml" />
+
+   <% if data_source == "yes" and install_mode == "custom" %>
+   <Resource 
+	name="<%= scope.lookupvar('tomcat::data_source::ds_resource_name') %>" 
+	auth="Container"
+	type="javax.sql.DataSource" 
+	maxActive="<%= scope.lookupvar('tomcat::data_source::ds_max_active') %>" 
+	maxIdle="<%= scope.lookupvar('tomcat::data_source::ds_max_idle') %>" 
+	maxWait="<%= scope.lookupvar('tomcat::data_source::ds_max_wait') %>"
+	driverClassName="oracle.jdbc.OracleDriver" 
+	url="jdbc:oracle:thin:@192.168.52.12:1521/efila"
+	username="<%= scope.lookupvar('tomcat::data_source::ds_username') %>" 
+	password="<%= scope.lookupvar('tomcat::data_source::ds_password') %>" 
+	validationQuery="select 1 from dual"
+	initialSize="5" 
+	poolPreparedStatements="true" />
+   <% end %>
+</GlobalNamingResources>
+
+
   </GlobalNamingResources>
 
   <!-- A "Service" is a collection of one or more "Connectors" that share

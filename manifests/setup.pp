@@ -129,16 +129,6 @@ define tomcat::setup (
           unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}/" }
   
   if ($install_mode == "custom"){   
-	    
-	    if ($data_source == "no"){                
-		    file { "serverxml":
-		        path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::server_xml}",
-		        owner   => 'root',
-		        group   => 'root',
-		        mode    => '0644',
-		        require => Exec['move_tomcat'],
-		        content => template('tomcat/serverxml.erb') } 
-	     } elsif ($data_source == "yes"){
 	          file { "serverxml":
             path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::server_xml}",
             owner   => 'root',
@@ -154,7 +144,6 @@ define tomcat::setup (
             require => Exec['move_tomcat'],
             mode    => '0644',
             content => template('tomcat/context.erb') }  
-	     }
 	          
   }
   
