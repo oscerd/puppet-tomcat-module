@@ -143,8 +143,7 @@ define tomcat::setup (
             group   => 'root',
             require => Exec['move_tomcat'],
             mode    => '0644',
-            content => template('tomcat/context.erb') }  
-	          
+            content => template('tomcat/context.erb') }           
   }
   
   exec { 'clean_tomcat': 
