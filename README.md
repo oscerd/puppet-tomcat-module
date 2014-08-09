@@ -27,6 +27,7 @@ If you include the tomcat::setup class by setting source_mode to `web` the modul
 in a specific directory. If you set the source_mode `local` the tomcat package must be place in `/tomcat/files/` 
 folder. The module will do the same operations without download the package. For more information about the parameters definition see [Parameters](#Parameters)
 
+```puppet
 	tomcat::setup { "tomcat":
 	  family => "7",
 	  update_version => "55",
@@ -37,11 +38,13 @@ folder. The module will do the same operations without download the package. For
 	  install_mode => "custom",
 	  data_source => "yes"
 	  }
+```
 
 It's important to define a global search path for the `exec` resource to make module work. 
 This should usually be placed in `manifests/site.pp`. It is also important to make sure `unzip` and `tar` command 
 are installed on the target system:
 
+```puppet
 	Exec {
 	  path => "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
 	}
@@ -53,6 +56,7 @@ are installed on the target system:
 	package { 'unzip':
 	  ensure => installed
 	}
+```
 
 ## <a name='Parameters'>Parameters</a>
 
@@ -71,48 +75,50 @@ The Puppet Tomcat module use the following parameters in his setup
 
 When using the _custom_ installation mode, the module will use the template `templates/serverxml.erb` to build a `server.xml` custom file. The module will use the following parameters (listed in tomcat::params class):
 
+```puppet
 	# Set http port in serverxml.erb
 	$http_port = "8082"
-		  
+
 	# Set https port in serverxml.erb
 	$https_port = "8083"
-		  
+
 	# Set ajp port in serverxml.erb
 	$ajp_port = "8007"
-		  
+
 	# Set shutdown port in serverxml.erb
 	$shutdown_port = "8001"
-		  
+
 	# Set connection timeout in http connector in serverxml.erb
 	$http_connection_timeout = "20000"
-		  
+
 	# Set max threads in https connector in serverxml.erb
 	$https_max_threads = "150"
-
+```
 
 When using the _custom_ installation mode with data source value equal to _yes_, the module will customize `conf/server.xml` and `conf/context.xml` (by using `templates/serverxml.erb` and `templates/context.erb` templates) to build a data source. The parameters related to data source are the following (listed in tomcat::data_source class):
 
+```puppet
 	# Set Name
 	$ds_resource_name = "jdbc/ExampleDB"
 
 	# Set MaxActive
 	$ds_max_active = "100"
-	  
+
 	# Set MaxIdle
 	$ds_max_idle = "20"
-	  
+
 	# Set MaxWait
 	$ds_max_wait = "10000"
-	  
+
 	# Set username
 	$ds_username = "username"
 
 	# Set password
 	$ds_password = "password"
-	  
+
 	# Set driver class name
 	$ds_driver_class_name = "oracle.jdbc.OracleDriver"
-	  
+
 	# Url variable
 	$ds_driver = "jdbc"
 	$ds_dbms = "oracle"
@@ -122,6 +128,7 @@ When using the _custom_ installation mode with data source value equal to _yes_,
 
 	# Builded url
 	$ds_url = "${ds_driver}:${ds_dbms}:thin:@${ds_host}:${ds_port}/${ds_service}"
+```
 
 ## <a name='Testing'>Testing</a>
 
