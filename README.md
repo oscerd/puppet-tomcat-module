@@ -69,7 +69,7 @@ The Puppet Tomcat module use the following parameters in his setup
 
 ## <a name='Customization'>Customization</a>
 
-When using the _custom_ installation mode, the module will use the template `templates/serverxml.erb` to build a `server.xml` custom file. The module will use the following parameters (liste in tomcat::params class):
+When using the _custom_ installation mode, the module will use the template `templates/serverxml.erb` to build a `server.xml` custom file. The module will use the following parameters (listed in tomcat::params class):
 
 	# Set http port in serverxml.erb
 	$http_port = "8082"
@@ -88,6 +88,40 @@ When using the _custom_ installation mode, the module will use the template `tem
 		  
 	# Set max threads in https connector in serverxml.erb
 	$https_max_threads = "150"
+
+When using the _custom_ installation mode with _yes_ value of data source, the module will customize `server.xml` and `context.xml` to build a data source. The parameters related to data source are
+the following (listed in tomcat::data_source class):
+
+	# Set Name
+	$ds_resource_name = "jdbc/ExampleDB"
+
+	# Set MaxActive
+	$ds_max_active = "100"
+	  
+	# Set MaxIdle
+	$ds_max_idle = "20"
+	  
+	# Set MaxWait
+	$ds_max_wait = "10000"
+	  
+	# Set username
+	$ds_username = "username"
+
+	# Set password
+	$ds_password = "password"
+	  
+	# Set driver class name
+	$ds_driver_class_name = "oracle.jdbc.OracleDriver"
+	  
+	# Url variable
+	$ds_driver = "jdbc"
+	$ds_dbms = "oracle"
+	$ds_host = "192.168.52.128"
+	$ds_port = "1521"
+	$ds_service = "example"
+
+	# Builded url
+	$ds_url = "${ds_driver}:${ds_dbms}:thin:@${ds_host}:${ds_port}/${ds_service}"
 
 ## <a name='Testing'>Testing</a>
 
