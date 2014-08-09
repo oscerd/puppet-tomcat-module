@@ -135,7 +135,7 @@ define tomcat::setup (
             group   => 'root',
             require => Exec['move_tomcat'],
             mode    => '0644',
-            content => template('tomcat/serverdatasourcexml.erb') }
+            content => template('tomcat/serverxml.erb') }
             
             file { "contextxml":
             path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::context_xml}",
