@@ -20,7 +20,7 @@ Usage
 
 If you include the tomcat::setup class by setting source_mode to `web` the module will download the package, extract it and move it 
 in a specific directory. If you set the source_mode `local` the tomcat package must be place in `/tomcat/files/` 
-folder. The module will do the same operations without download the package. For more information about the parameters definition see [Parameters](#Parameters)
+folder. The module will do the same operations without download the package. For more information about the parameters definition see Parameters section
 
 ```puppet
 	tomcat::setup { "tomcat":
