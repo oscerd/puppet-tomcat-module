@@ -1,27 +1,20 @@
 Puppet Tomcat Module
 ========================
 
-## <a name='TOC'>Table of Contents</a>
-
-  1. [Introduction](#Introduction)
-  1. [Installation](#Installation)
-  1. [Usage](#Usage)
-  1. [Parameters](#Parameters)
-  1. [Customization](#Customization)
-  1. [Testing](#Testing)
-  1. [Contributing](#Contributing)
-
-## <a name='Introduction'>Introduction</a>
+Introduction
+-----------------
 
 This module install Tomcat with puppet
 
-## <a name='Installation'>Installation</a>
+Installation
+-----------------
 
 Clone this repository in a tomcat directory in your puppet module directory
 
 	git clone https://github.com/ancosen/puppet-tomcat-module tomcat
 
-## <a name='Usage'>Usage</a>
+Usage
+-----------------
 
 If you include the tomcat::setup class by setting source_mode to `web` the module will download the package, extract it and move it 
 in a specific directory. If you set the source_mode `local` the tomcat package must be place in `/tomcat/files/` 
@@ -58,7 +51,8 @@ are installed on the target system:
 	}
 ```
 
-## <a name='Parameters'>Parameters</a>
+Parameters
+-----------------
 
 The Puppet Tomcat module use the following parameters in his setup
 
@@ -71,7 +65,8 @@ The Puppet Tomcat module use the following parameters in his setup
 *  __Install Mode__: The installation mode, possible values _clean_ and _custom_. With install mode _clean_ the module will only install Apache Tomcat, while with install mode _custom_ the module will install Apache Tomcat with a customizable version of `server.xml`
 *  __Data Source__: Define the data source's presence, possible values _yes_ and _no_. If the data source value is _yes_ (and the installation mode value is _custom_ ) then the module will add data source section in `server.xml` and `context.xml`
 
-## <a name='Customization'>Customization</a>
+Customization
+-----------------
 
 When using the _custom_ installation mode, the module will use the template `templates/serverxml.erb` to build a `server.xml` custom file. The module will use the following parameters (listed in tomcat::params class):
 
@@ -130,7 +125,8 @@ When using the _custom_ installation mode with data source value equal to _yes_,
 	$ds_url = "${ds_driver}:${ds_dbms}:thin:@${ds_host}:${ds_port}/${ds_service}"
 ```
 
-## <a name='Testing'>Testing</a>
+Testing
+-----------------
 
 The Puppet tomcat module has been tested on the following Operating Systems: 
 
@@ -139,6 +135,24 @@ The Puppet tomcat module has been tested on the following Operating Systems:
 1. Fedora 20.0 x86_64
 1. Ubuntu 14.04 x64
 
-## <a name='Contributing'>Contributing</a>
+Contributing
+-----------------
 
 Feel free to contribute by testing, opening issues and adding/changing code
+
+License
+-----------------
+
+Copyright 2014 Oscerd and contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
