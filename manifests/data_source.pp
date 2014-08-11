@@ -34,6 +34,6 @@ class tomcat::data_source{
   $ds_port = "1521"
   $ds_service = "example"
   
-  # Builded url
+  # Complete URL
   $ds_url = "${ds_driver}:${ds_dbms}:thin:@${ds_host}:${ds_port}/${ds_service}"
 }
