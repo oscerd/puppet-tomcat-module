@@ -39,5 +39,19 @@ define tomcat::deploy (
     
   file { "${installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}${extension}":
           ensure => present,
-          source => "puppet:///modules/tomcat/${war_name}${extension}" }      
+          source => "puppet:///modules/tomcat/${war_name}${extension}",
+          alias => "deploying_war" }
+  
+    exec { "make_executable":
+          command => "chmod +x ${installdir}${tomcat}-${family}.0.${update_version}/bin/*.sh",
+          require => File[deploying_war],
+          alias => "executable" } 
+         
+	exec { "start_tomcat":
+	        command => "${installdir}${tomcat}-${family}.0.${update_version}/bin/startup.sh",
+          require => [Exec[executable], File[deploying_war]] }      
+  }
+  
+  define arrayDebug {
+        notify { "Item ${name}": }
   }
