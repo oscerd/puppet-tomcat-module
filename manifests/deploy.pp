@@ -1,3 +1,4 @@
+# tomcat::setup defines the deploy stage of Tomcat installation
 define tomcat::deploy (
   $war_name = undef,
   $deploy_path = undef,

@@ -24,3 +24,12 @@ tomcat::setup { "tomcat":
   data_source => "yes"
   }
 
+tomcat::deploy { "deploy":
+  war_name => "sample",
+  deploy_path => "/webapps/",
+  family => "7",
+  update_version => "55",
+  installdir => "/opt/",
+  require => Tomcat::Setup["tomcat"]
+  }
+

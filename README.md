@@ -20,7 +20,8 @@ Usage
 
 If you include the tomcat::setup class by setting source_mode to `web` the module will download the package, extract it and move it 
 in a specific directory. If you set the source_mode `local` the tomcat package must be place in `/tomcat/files/` 
-folder. The module will do the same operations without download the package. For more information about the parameters definition see Parameters section
+folder. The module will do the same operations without download the package. If you need to deploy a war directly, you can use tomcat::deploy. The war must be placed in `/tomcat/files/`.
+For more information about the parameters definition see Parameters section
 
 ```puppet
 	tomcat::setup { "tomcat":
@@ -32,6 +33,15 @@ folder. The module will do the same operations without download the package. For
 	  tmpdir => "/tmp/",
 	  install_mode => "custom",
 	  data_source => "yes"
+	  }
+
+	tomcat::deploy { "deploy":
+	  war_name => "sample",
+	  deploy_path => "/webapps/",
+	  family => "7",
+	  update_version => "55",
+	  installdir => "/opt/",
+	  require => Tomcat::Setup["tomcat"]
 	  }
 ```
 
@@ -56,7 +66,7 @@ are installed on the target system:
 Parameters
 -----------------
 
-The Puppet Tomcat module use the following parameters in his setup
+The Puppet Tomcat module use the following parameters in his setup phase
 
 *  __Family__: Possible values of Apache Tomcat version _6_, _7_, _8_ 
 *  __Update Version__: The update version
@@ -66,6 +76,14 @@ The Puppet Tomcat module use the following parameters in his setup
 *  __Temp Directory__: The directory where the Apache Tomcat package will be extracted (default is `/tmp/`)
 *  __Install Mode__: The installation mode, possible values _clean_ and _custom_. With install mode _clean_ the module will only install Apache Tomcat, while with install mode _custom_ the module will install Apache Tomcat with a customizable version of `server.xml`
 *  __Data Source__: Define the data source's presence, possible values _yes_ and _no_. If the data source value is _yes_ (and the installation mode value is _custom_ ) then the module will add data source section in `server.xml` and `context.xml`
+
+The Puppet Tomcat module use the following parameters in his deploy phase
+
+*  __Family__: Possible values of Apache Tomcat version _6_, _7_, _8_ 
+*  __Update Version__: The update version
+*  __Install Directory__: The directory where the Apache Tomcat will be installed (default is `/opt/`)
+*  __War Name__: The name of war that have to be deployed
+*  __Deploy Path__: The location where the war must be placed (default is `/webapps/`) 
 
 Customization
 -----------------
