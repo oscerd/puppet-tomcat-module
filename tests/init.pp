@@ -21,7 +21,8 @@ tomcat::setup { "tomcat":
   installdir => "/opt/",
   tmpdir => "/tmp/",
   install_mode => "custom",
-  data_source => "yes"
+  data_source => "yes",
+  direct_start => "yes"
   }
 
 tomcat::deploy { "deploy":

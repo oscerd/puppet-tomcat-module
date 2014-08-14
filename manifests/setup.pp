@@ -7,7 +7,8 @@ define tomcat::setup (
   $tmpdir = undef,
   $installdir = undef,
   $install_mode = undef,
-  $data_source = undef
+  $data_source = undef,
+  $direct_start = undef
   ) { 
   
   include tomcat::params
@@ -73,6 +74,12 @@ define tomcat::setup (
     $defined_tmpdir ='/tmp/'
   } else {
     $defined_tmpdir = $tmpdir
+  }
+  
+  if($direct_start == undef){
+    $start = "no"
+  } else {
+    $start = $direct_start
   }
   
   if ($extension == ".zip"){
@@ -150,4 +157,16 @@ define tomcat::setup (
         command => "rm -rf ${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension}",
         require => Exec['move_tomcat'],
         logoutput => "false" }
+        
+  if ($start == yes) {       
+    
+   exec { "make_executable":
+          command => "chmod +x ${installdir}${tomcat}-${family}.0.${update_version}/bin/*.sh",
+          require => Exec['move_tomcat'],
+          alias => "executable" } 
+    
+   exec { "start_tomcat":
+          command => "${installdir}${tomcat}-${family}.0.${update_version}/bin/startup.sh",
+          require => [Exec[executable], Exec['move_tomcat']] }      
+     }
 }
