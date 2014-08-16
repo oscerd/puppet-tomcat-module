@@ -53,5 +53,11 @@ define tomcat::deploy (
   exec { 'move_war': 
           command => "mv ${defined_tmpdir}${war_name}${extension} ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}",
           require => File[ tmp_war ] ,
-          unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}" }
+          unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}",
+          alias => "move_war" }
+          
+  exec { 'clean_war': 
+        command => "rm -rf ${defined_tmpdir}${war_name}${extension}",
+        require => Exec[move_war],
+        logoutput => "false" }
   }

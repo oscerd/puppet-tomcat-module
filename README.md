@@ -42,6 +42,7 @@ For more information about the parameters definition see Parameters section
 	  family => "7",
 	  update_version => "55",
 	  installdir => "/opt/",
+	  tmpdir => "/tmp/",
 	  require => Tomcat::Setup["tomcat"]
 	  }
 ```
@@ -86,6 +87,7 @@ The Puppet Tomcat module use the following parameters in his deploy phase
 *  __Install Directory__: The directory where the Apache Tomcat will be installed (default is `/opt/`)
 *  __War Name__: The name of war that have to be deployed
 *  __Deploy Path__: The location where the war must be placed (default is `/webapps/`) 
+*  __Temp Directory__: The directory where the Apache Tomcat package will be extracted (default is `/tmp/`)
 
 Customization
 -----------------

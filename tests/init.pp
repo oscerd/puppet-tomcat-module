@@ -31,6 +31,7 @@ tomcat::deploy { "deploy":
   family => "7",
   update_version => "55",
   installdir => "/opt/",
+  tmpdir => "/tmp/",
   require => Tomcat::Setup["tomcat"]
   }
 
