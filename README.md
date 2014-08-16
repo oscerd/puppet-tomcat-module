@@ -84,10 +84,10 @@ The Puppet Tomcat module use the following parameters in his deploy phase
 
 *  __Family__: Possible values of Apache Tomcat version _6_, _7_, _8_ 
 *  __Update Version__: The update version
-*  __Install Directory__: The directory where the Apache Tomcat will be installed (default is `/opt/`)
+*  __Install Directory__: The directory where the Apache Tomcat is installed (default is `/opt/`)
 *  __War Name__: The name of war that have to be deployed
 *  __Deploy Path__: The location where the war must be placed (default is `/webapps/`) 
-*  __Temp Directory__: The directory where the Apache Tomcat package will be extracted (default is `/tmp/`)
+*  __Temp Directory__: The directory where the war must be placed before being moved to _deploy path_ directory (default is `/tmp/`)
 
 Customization
 -----------------
