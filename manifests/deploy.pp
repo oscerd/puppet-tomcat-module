@@ -4,7 +4,8 @@ define tomcat::deploy (
   $deploy_path = undef,
   $family = undef,
   $update_version = undef,
-  $installdir = undef
+  $installdir = undef,
+  $tmpdir = undef
   ) { 
   
   $extension = ".war"
@@ -36,9 +37,21 @@ define tomcat::deploy (
   } else {
     $defined_installdir = $installdir
   }
+ 
+  if ($tmpdir == undef){
+    notify{'Temp folder not specified, setting default install folder /tmp/':}
+    $defined_tmpdir ='/tmp/'
+  } else {
+    $defined_tmpdir = $tmpdir
+  }
     
-  file { "${installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}${extension}":
+  file { "${defined_tmpdir}${war_name}${extension}":
           ensure => present,
           source => "puppet:///modules/tomcat/${war_name}${extension}",
-          alias => "deploying_war" }
+          alias => "tmp_war" }
+          
+  exec { 'move_war': 
+          command => "mv ${defined_tmpdir}${war_name}${extension} ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}",
+          require => File[ tmp_war ] ,
+          unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}" }
   }

@@ -106,7 +106,8 @@ define tomcat::setup (
           require => [ File[ "${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension}"],
                        Package ['tar'],
                        Package['unzip']
-          ], 
+          ],
+          unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}/",
           alias => extract_tomcat } 
   }
   elsif ($source_mode == "web"){ 
