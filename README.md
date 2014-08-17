@@ -22,7 +22,7 @@ If you include the tomcat::setup class by setting source_mode to `web` the modul
 in a specific directory. If you set the source_mode `local` the tomcat package must be place in `/tomcat/files/` 
 folder. The module will do the same operations without download the package. If you need to deploy a war directly, you can use tomcat::deploy. The war must be placed in `/tomcat/files/`.
 For more information about the parameters definition see Parameters section. In this example we refer to a generic sample.war package. This is the sample application from 
-Apache Community from this url: __https://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/__
+Apache Community and it comes from this url: __https://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/__
 
 ```puppet
 	tomcat::setup { "tomcat":
@@ -85,13 +85,13 @@ The Puppet Tomcat module use the following parameters in his setup phase
 
 The Puppet Tomcat module use the following parameters in his deploy phase
 
-*  __Family__: Possible values of Apache Tomcat version _6_, _7_, _8_ 
-*  __Update Version__: The update version
+*  __War Name__: The name of war that have to be deployed
 *  __War Versioned__: This variable defines if a the deploying war is versioned or not. Possible values _yes_ or _no_ (default is _no_)
 *  __War Version__: The version of the deploying war. This variable will be ignored if war versioned value is _no_
-*  __Install Directory__: The directory where the Apache Tomcat is installed (default is `/opt/`)
-*  __War Name__: The name of war that have to be deployed
 *  __Deploy Path__: The location where the war must be placed (default is `/webapps/`) 
+*  __Family__: Possible values of Apache Tomcat version _6_, _7_, _8_ 
+*  __Update Version__: The update version of Apache Tomcat
+*  __Install Directory__: The directory where the Apache Tomcat is installed (default is `/opt/`)
 *  __Temp Directory__: The directory where the war must be placed before being moved to _deploy path_ directory (default is `/tmp/`)
 
 Customization
