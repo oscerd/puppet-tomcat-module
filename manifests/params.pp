@@ -7,20 +7,20 @@ class tomcat::params{
   # Server.xml parameters
   
   # Set http port in serverxml.erb
-  $http_port = "8082"
+  $http_port = hiera('tomcat::params::http_port')
   
   # Set https port in serverxml.erb
-  $https_port = "8083"
+  $https_port = hiera('tomcat::params::https_port')
   
   # Set ajp port in serverxml.erb
-  $ajp_port = "8007"
+  $ajp_port = hiera('tomcat::params::ajp_port')
   
   # Set shutdown port in serverxml.erb
-  $shutdown_port = "8001"
+  $shutdown_port = hiera('tomcat::params::shutdown_port')
   
   # Set connection timeout in http connector in serverxml.erb
-  $http_connection_timeout = "20000"
+  $http_connection_timeout = hiera('tomcat::params::http_connection_timeout')
   
   # Set max threads in https connector in serverxml.erb
-  $https_max_threads = "150"
+  $https_max_threads = hiera('tomcat::params::https_max_threads')
 }
