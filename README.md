@@ -12,7 +12,7 @@ Installation
 Clone this repository in a tomcat directory in your puppet module directory
 
 ```shell
-	git clone https://github.com/ancosen/puppet-tomcat-module tomcat
+	git clone https://github.com/oscerd/puppet-tomcat-module tomcat
 ```
 
 Usage
@@ -208,6 +208,13 @@ The Puppet tomcat module has been tested on the following Operating Systems:
 1. Debian 7.5 x64
 1. Fedora 20.0 x86_64
 1. Ubuntu 14.04 x64
+
+Working Example
+-----------------
+
+I'm starting to commit some working example of the module. The first is:
+
+* A CentOS 6.5 x64 Vagrant Machine with a clean installation of tomcat and the deploy of sample Application WAR. Here is the repository: __https://github.com/oscerd/vagrant-centos6.5-tomcat__
 
 Contributing
 -----------------
