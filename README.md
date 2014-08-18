@@ -97,62 +97,107 @@ The Puppet Tomcat module use the following parameters in his deploy phase
 Customization
 -----------------
 
-When using the _custom_ installation mode, the module will use the template `templates/serverxml.erb` to build a `server.xml` custom file. The module will use the following parameters (listed in tomcat::params class):
+When using the _custom_ installation mode, the module will use the template `templates/serverxml.erb` to build a `server.xml` custom file, by using __Hiera__. The module will use the following parameters (listed in tomcat::params class):
 
 ```puppet
+	# Server.xml parameters
+	  
 	# Set http port in serverxml.erb
-	$http_port = "8082"
-
+	$http_port = hiera('tomcat::params::http_port')
+	  
 	# Set https port in serverxml.erb
-	$https_port = "8083"
-
+	$https_port = hiera('tomcat::params::https_port')
+	  
 	# Set ajp port in serverxml.erb
-	$ajp_port = "8007"
-
+	$ajp_port = hiera('tomcat::params::ajp_port')
+	  
 	# Set shutdown port in serverxml.erb
-	$shutdown_port = "8001"
-
+	$shutdown_port = hiera('tomcat::params::shutdown_port')
+	  
 	# Set connection timeout in http connector in serverxml.erb
-	$http_connection_timeout = "20000"
-
+	$http_connection_timeout = hiera('tomcat::params::http_connection_timeout')
+	  
 	# Set max threads in https connector in serverxml.erb
-	$https_max_threads = "150"
+	$https_max_threads = hiera('tomcat::params::https_max_threads')
 ```
 
 When using the _custom_ installation mode with data source value equal to _yes_, the module will customize `conf/server.xml` and `conf/context.xml` (by using `templates/serverxml.erb` and `templates/context.erb` templates) to build a data source. The parameters related to data source are the following (listed in tomcat::data_source class):
 
 ```puppet
+	# Datasource
+	  
 	# Set Name
-	$ds_resource_name = "jdbc/ExampleDB"
+	$ds_resource_name = hiera('tomcat::data_source::ds_resource_name')
 
 	# Set MaxActive
-	$ds_max_active = "100"
-
+	$ds_max_active = hiera('tomcat::data_source::ds_max_active')
+	  
 	# Set MaxIdle
-	$ds_max_idle = "20"
-
+	$ds_max_idle = hiera('tomcat::data_source::ds_max_idle')
+	  
 	# Set MaxWait
-	$ds_max_wait = "10000"
-
+	$ds_max_wait = hiera('tomcat::data_source::ds_max_wait')
+	  
 	# Set username
-	$ds_username = "username"
+	$ds_username = hiera('tomcat::data_source::ds_username')
 
 	# Set password
-	$ds_password = "password"
-
+	$ds_password = hiera('tomcat::data_source::ds_password')
+	  
 	# Set driver class name
-	$ds_driver_class_name = "oracle.jdbc.OracleDriver"
-
+	$ds_driver_class_name = hiera('tomcat::data_source::ds_driver_class_name')
+	  
 	# Url variable
-	$ds_driver = "jdbc"
-	$ds_dbms = "oracle"
-	$ds_host = "192.168.52.128"
-	$ds_port = "1521"
-	$ds_service = "example"
-
-	# Builded url
+	$ds_driver = hiera('tomcat::data_source::ds_driver')
+	$ds_dbms = hiera('tomcat::data_source::ds_dbms')
+	$ds_host = hiera('tomcat::data_source::ds_host')
+	$ds_port = hiera('tomcat::data_source::ds_port')
+	$ds_service = hiera('tomcat::data_source::ds_service')
+	  
+	# Complete URL
 	$ds_url = "${ds_driver}:${ds_dbms}:thin:@${ds_host}:${ds_port}/${ds_service}"
 ```
+
+To use __Hiera__ it's required to define the following variables in a specific file (or splitted in different files). We assume this file is called `common.yaml`:
+
+```yaml
+	---
+	tomcat::params::http_port: 8082
+	tomcat::params::https_port: 8083
+	tomcat::params::ajp_port: 8007
+	tomcat::params::shutdown_port: 8001
+	tomcat::params::http_connection_timeout: 20000
+	tomcat::params::https_max_threads: 150
+
+	tomcat::data_source::ds_resource_name: jdbc/ExampleDB
+	tomcat::data_source::ds_max_active: 100
+	tomcat::data_source::ds_max_idle: 20
+	tomcat::data_source::ds_max_wait: 10000
+	tomcat::data_source::ds_username: username
+	tomcat::data_source::ds_password: password
+	tomcat::data_source::ds_driver_class_name: oracle.jdbc.OracleDriver
+	tomcat::data_source::ds_driver: jdbc
+	tomcat::data_source::ds_dbms: oracle
+	tomcat::data_source::ds_host: 192.168.52.128
+	tomcat::data_source::ds_port: 1521
+	tomcat::data_source::ds_service: example
+```
+
+and declare a `hiera.yaml` of this form (if you are using __Vagrant__)
+
+```yaml
+	---
+	:backends:
+	  - yaml
+
+	:hierarchy:
+	  - "common"
+
+	:yaml:
+	  :datadir: '/vagrant/hiera'
+```
+
+or with the _datadir_ you usually use with __hiera__ if you are not usign __Vagrant__
 
 Testing
 -----------------
