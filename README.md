@@ -158,7 +158,7 @@ When using the _custom_ installation mode with data source value equal to _yes_,
 	$ds_url = "${ds_driver}:${ds_dbms}:thin:@${ds_host}:${ds_port}/${ds_service}"
 ```
 
-To use __Hiera__ it's required to define the following variables in a specific file (or splitted in different files). We assume this file is called `common.yaml`:
+To use __Hiera__ it's required to define the following variables in a specific file (or splitted in different files). We assume this file is called `common.yaml` (because in my example I always use YAML format):
 
 ```yaml
 	---
