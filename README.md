@@ -39,8 +39,8 @@ Apache Community and it comes from this url: __https://tomcat.apache.org/tomcat-
 
 	tomcat::deploy { "deploy":
 	  war_name => "sample",
-          war_versioned => "no",
-          war_version => "",
+	  war_versioned => "no",
+	  war_version => "",
 	  deploy_path => "/webapps/",
 	  family => "7",
 	  update_version => "55",
