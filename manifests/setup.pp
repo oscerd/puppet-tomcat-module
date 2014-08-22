@@ -8,12 +8,14 @@ define tomcat::setup (
   $installdir = undef,
   $install_mode = undef,
   $data_source = undef,
+  $users = undef,
   $direct_start = undef
   ) { 
   
   include tomcat::params
   include tomcat::data_source
   include tomcat::config
+  include tomcat::users
   
   # Validate parameters presence   
   if ($family == undef) {
@@ -40,6 +42,10 @@ define tomcat::setup (
     fail('data source parameter must be set')
   }
   
+  if ($users == undef) {
+    fail('users parameter must be set')
+  }
+  
   # Validate parameters  
   
   if (($family != '6') and ($family != '7') and ($family != '8')) {
@@ -60,6 +66,10 @@ define tomcat::setup (
   
   if (($data_source != 'yes') and ($data_source != 'no')) {
     fail('data source parameter must have value "yes" or "no"')
+  }
+  
+  if (($users != 'yes') and ($users != 'no')) {
+    fail('users parameter must have value "yes" or "no"')
   }
   
   if ($installdir == undef){
@@ -151,7 +161,15 @@ define tomcat::setup (
             group   => 'root',
             require => Exec['move_tomcat'],
             mode    => '0644',
-            content => template('tomcat/context.erb') }           
+            content => template('tomcat/context.erb') }      
+            
+            file { "usersxml":
+            path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::users_xml}",
+            owner   => 'root',
+            group   => 'root',
+            require => Exec['move_tomcat'],
+            mode    => '0644',
+            content => template('tomcat/users.erb') }      
   }
   
   exec { 'clean_tomcat': 
