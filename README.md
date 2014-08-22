@@ -34,6 +34,7 @@ Apache Community and it comes from this url: __https://tomcat.apache.org/tomcat-
 	  tmpdir => "/tmp/",
 	  install_mode => "custom",
 	  data_source => "yes",
+	  users => "yes",
 	  direct_start => "yes"
 	  }
 
@@ -158,7 +159,23 @@ When using the _custom_ installation mode with data source value equal to _yes_,
 	$ds_url = "${ds_driver}:${ds_dbms}:thin:@${ds_host}:${ds_port}/${ds_service}"
 ```
 
-To use __Hiera__ it's required to define the following variables in a specific file (or splitted in different files). We assume this file is called `common.yaml` (because in my example I always use YAML format):
+In _custom_ installation mode with users value equal to _yes_, the module will customize `conf/tomcat-users.xml` (by using `templates/users.erb` template). The parameters related to users are the following (listed in tomcat::users class):
+
+```puppet
+	# Users
+	  
+	# Set Default Roles
+	$tomcat_roles = hiera('tomcat::roles::list')
+	  
+	# Set Users
+	$tomcat_users = hiera('tomcat::users::list')
+	  
+	# Set Mapping users-roles
+	$tomcat_map = hiera('tomcat::users::map')
+```
+
+To use __Hiera__ it's required to define the following variables in a specific file (or splitted in different files). We specify this variable in different file.
+The first is called `configuration.yaml` (because in my example I always use YAML format):
 
 ```yaml
 	---
@@ -168,7 +185,12 @@ To use __Hiera__ it's required to define the following variables in a specific f
 	tomcat::params::shutdown_port: 8001
 	tomcat::params::http_connection_timeout: 20000
 	tomcat::params::https_max_threads: 150
+```
 
+The second is called `data_source.yaml` (because in my example I always use YAML format):
+
+```yaml
+	---
 	tomcat::data_source::ds_resource_name: jdbc/ExampleDB
 	tomcat::data_source::ds_max_active: 100
 	tomcat::data_source::ds_max_idle: 20
@@ -183,6 +205,30 @@ To use __Hiera__ it's required to define the following variables in a specific f
 	tomcat::data_source::ds_service: example
 ```
 
+The third is called `users.yaml`:
+
+```yaml
+	tomcat::roles::list:
+	      - manager-gui
+	      - manager-script
+	      - manager-jmx
+	      - manager-status
+	      - admin-gui
+	      - admin-script
+
+	tomcat::users::list:
+	      - username: username
+		password: password
+	      - username: username1
+		password: password
+
+	tomcat::users::map:
+	      - username: username
+		roles: manager-gui,admin-gui
+	      - username: username1
+		roles: manager-gui
+```
+
 and declare a `hiera.yaml` of this form (if you are using __Vagrant__)
 
 ```yaml
@@ -191,7 +237,9 @@ and declare a `hiera.yaml` of this form (if you are using __Vagrant__)
 	  - yaml
 
 	:hierarchy:
-	  - "common"
+	  - "data_source"
+	  - "configuration"
+	  - "users"
 
 	:yaml:
 	  :datadir: '/vagrant/hiera'
