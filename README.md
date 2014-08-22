@@ -218,15 +218,15 @@ The third is called `users.yaml`:
 
 	tomcat::users::list:
 	      - username: username
-		password: password
+		  password: password
 	      - username: username1
-		password: password
+		  password: password
 
 	tomcat::users::map:
 	      - username: username
-		roles: manager-gui,admin-gui
+		  roles: manager-gui,admin-gui
 	      - username: username1
-		roles: manager-gui
+		  roles: manager-gui
 ```
 
 and declare a `hiera.yaml` of this form (if you are using __Vagrant__)
