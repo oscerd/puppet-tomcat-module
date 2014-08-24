@@ -229,6 +229,8 @@ The third is called `users.yaml`:
 		    roles: manager-gui
 ```
 
+In this file it is possible to declare all the tomcat roles and associates a username to one or more roles. In this example there is the common tomcat roles.
+
 and declare a `hiera.yaml` of this form (if you are using __Vagrant__)
 
 ```yaml
