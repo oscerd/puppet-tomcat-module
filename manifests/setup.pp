@@ -105,6 +105,7 @@ define tomcat::setup (
   }
   
   $tomcat = "apache-tomcat"
+  $web_repo_path = hiera('tomcat::params::web_repository')
   
   if ($source_mode == "local"){
   file { "${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension}":
@@ -121,7 +122,7 @@ define tomcat::setup (
           alias => extract_tomcat } 
   }
   elsif ($source_mode == "web"){ 
-  $source = "http://apache.fastbull.org/tomcat/tomcat-${family}/v${family}.0.${update_version}/bin/${tomcat}-${family}.0.${update_version}${extension}"
+  $source = "${web_repo_path}tomcat-${family}/v${family}.0.${update_version}/bin/${tomcat}-${family}.0.${update_version}${extension}"
 
   exec { 'retrieve_tomcat': 
           command => "wget -q ${source} -P ${defined_tmpdir}",
