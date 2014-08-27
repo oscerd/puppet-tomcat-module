@@ -185,9 +185,10 @@ The first is called `configuration.yaml` (because in my example I always use YAM
 	tomcat::params::shutdown_port: 8001
 	tomcat::params::http_connection_timeout: 20000
 	tomcat::params::https_max_threads: 150
+	tomcat::params::web_repository: http://apache.fastbull.org/tomcat/
 ```
 
-The second is called `data_source.yaml` (because in my example I always use YAML format):
+The second is called `data_source.yaml`:
 
 ```yaml
 	---
