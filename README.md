@@ -35,6 +35,7 @@ Apache Community and it comes from this url: __https://tomcat.apache.org/tomcat-
 	  install_mode => "custom",
 	  data_source => "yes",
 	  users => "yes",
+	  access_log => "yes",
 	  direct_start => "yes"
 	  }
 
@@ -82,6 +83,7 @@ The Puppet Tomcat module use the following parameters in his setup phase
 *  __Temp Directory__: The directory where the Apache Tomcat package will be extracted (default is `/tmp/`)
 *  __Install Mode__: The installation mode, possible values _clean_ and _custom_. With install mode _clean_ the module will only install Apache Tomcat, while with install mode _custom_ the module will install Apache Tomcat with a customizable version of `server.xml`
 *  __Data Source__: Define the data source's presence, possible values _yes_ and _no_. If the data source value is _yes_ (and the installation mode value is _custom_ ) then the module will add data source section in `server.xml` and `context.xml`
+*  __Access Log__: Defined if Apache Tomcat access log is enabled, possible values _yes_ and _no_ (default is _no_)
 *  __Direct Start__: Define if Tomcat must directly start, possible values _yes_ and _no_ (default is _no_)
 
 The Puppet Tomcat module use the following parameters in his deploy phase

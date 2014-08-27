@@ -9,6 +9,7 @@ define tomcat::setup (
   $install_mode = undef,
   $data_source = undef,
   $users = undef,
+  $access_log = undef,
   $direct_start = undef
   ) { 
   
@@ -90,6 +91,12 @@ define tomcat::setup (
     $start = "no"
   } else {
     $start = $direct_start
+  }
+  
+  if($access_log == undef){
+    $defined_access_log = "no"
+  } else {
+    $defined_access_log = $access_log
   }
   
   if ($extension == ".zip"){
