@@ -1,7 +1,7 @@
 {
 "name": "oscerd-tomcat",
 "description": "The Tomcat module installs and customize Apache Tomcat on your node.\nThe module make possible to set the Tomcat version, the directory into which\nit will install, the temporary folder where the package will be extracted and many other features. Take a look at the documentation to know more.",
-"version": "1.0.2",
+"version": "1.0.3",
 "author": "Oscerd",
 "source": "https://github.com/oscerd/puppet-tomcat-module",
 "project_page": "https://github.com/oscerd/puppet-tomcat-module",
