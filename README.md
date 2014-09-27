@@ -4,7 +4,7 @@ Puppet Tomcat Module
 Introduction
 -----------------
 
-This module install Tomcat with puppet
+This Puppet module install Tomcat (customized or clean) and make possible to deploy packages on it
 
 Installation
 -----------------
