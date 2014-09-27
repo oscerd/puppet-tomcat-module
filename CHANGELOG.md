@@ -1,3 +1,7 @@
+## To be released - 1.0.3
+### Summary
+- This release add the possibility to specify a particular context related to the deploying package
+
 ## 14-09-2014 - Release - 1.0.2
 ### Summary
 - This release add the tomcat users provisioning and make access log optional

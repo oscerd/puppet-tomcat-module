@@ -24,6 +24,39 @@ folder. The module will do the same operations without download the package. If 
 For more information about the parameters definition see Parameters section. In this example we refer to a generic sample.war package. This is the sample application from 
 Apache Community and it comes from this url: __https://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/__
 
+If you want to install tomcat and deploy your package with a specific context you can use this example manifest:
+
+```puppet
+	tomcat::setup { "tomcat":
+	  family => "7",
+	  update_version => "55",
+	  extension => ".zip",
+	  source_mode => "local",
+	  installdir => "/opt/",
+	  tmpdir => "/tmp/",
+	  install_mode => "custom",
+	  data_source => "yes",
+	  users => "yes",
+	  access_log => "yes",
+	  direct_start => "yes"
+	  }
+
+	tomcat::deploy { "deploy":
+	  war_name => "sample",
+	  war_versioned => "no",
+	  war_version => "",
+	  deploy_path => "/release/",
+	  context => "/example",
+	  family => "7",
+	  update_version => "55",
+	  installdir => "/opt/",
+	  tmpdir => "/tmp/",
+	  require => Tomcat::Setup["tomcat"]
+	  }
+```
+
+Otherwise if you just need to install tomcat and deploy a package, without specify, a context you can use this example manifest:
+
 ```puppet
 	tomcat::setup { "tomcat":
 	  family => "7",
@@ -44,6 +77,7 @@ Apache Community and it comes from this url: __https://tomcat.apache.org/tomcat-
 	  war_versioned => "no",
 	  war_version => "",
 	  deploy_path => "/webapps/",
+	  context => "",
 	  family => "7",
 	  update_version => "55",
 	  installdir => "/opt/",
@@ -70,6 +104,8 @@ are installed on the target system:
 	}
 ```
 
+For more information about the module settings and module parameters read the instructions following sections.
+
 Parameters
 -----------------
 
@@ -92,6 +128,7 @@ The Puppet Tomcat module use the following parameters in his deploy phase
 *  __War Versioned__: This variable defines if a the deploying war is versioned or not. Possible values _yes_ or _no_ (default is _no_)
 *  __War Version__: The version of the deploying war. This variable will be ignored if war versioned value is _no_
 *  __Deploy Path__: The location where the war must be placed (default is `/webapps/`) 
+*  __Context__: The context of the package we are deploying. If _deploy path_ is different from `/webapps/` then the context will be considered, otherwise it will be skipped.
 *  __Family__: Possible values of Apache Tomcat version _6_, _7_, _8_ 
 *  __Update Version__: The update version of Apache Tomcat
 *  __Install Directory__: The directory where the Apache Tomcat is installed (default is `/opt/`)
