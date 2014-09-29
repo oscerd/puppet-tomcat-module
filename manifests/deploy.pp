@@ -1,14 +1,17 @@
 # tomcat::setup defines the deploy stage of Tomcat installation
 define tomcat::deploy (
-  $war_name       = undef,
-  $war_versioned  = undef,
-  $war_version    = undef,
-  $deploy_path    = undef,
-  $context        = undef,
-  $family         = undef,
-  $update_version = undef,
-  $installdir     = undef,
-  $tmpdir         = undef) {
+  $war_name           = undef,
+  $war_versioned      = undef,
+  $war_version        = undef,
+  $deploy_path        = undef,
+  $context            = undef,
+  $external_conf      = undef,
+  $external_dir       = undef,
+  $external_conf_path = undef,
+  $family             = undef,
+  $update_version     = undef,
+  $installdir         = undef,
+  $tmpdir             = undef) {
   $extension = ".war"
   $tomcat = "apache-tomcat"
   $default_deploy = "/webapps/"
@@ -71,6 +74,44 @@ define tomcat::deploy (
 
   if (($defined_deploy_path != $default_deploy) and ($context == undef)) {
     fail('context parameter must be set if deploy path is different from /webapps/')
+  }
+
+  if ($external_conf == undef) {
+    notify { 'External conf not specified, setting default External conf value to no': }
+    $defined_ext_conf = $external_conf
+  } else {
+    $defined_ext_conf = $external_conf
+  }
+
+  if (($defined_ext_conf == 'yes') and ($external_dir == undef or $external_conf_path == undef)) {
+    fail('external dir and  $external conf path parameter must be set if external_conf is equal to yes')
+  }
+
+  if ($defined_ext_conf == 'yes') {
+    exec { 'create_conf_path':
+      command => "mkdir -p ${defined_installdir}${tomcat}-${family}.0.${update_version}${external_conf_path}",
+      alias   => "app_conf_path"
+    }
+
+    file { "${defined_tmpdir}${external_dir}":
+      ensure  => file,
+      source  => "puppet:///modules/tomcat/${external_dir}",
+      require => Exec[app_conf_path],
+      alias   => "tmp_conf",
+      recurse => true
+    }
+
+    exec { 'move_conf':
+      command => "mv ${defined_tmpdir}${external_dir} ${defined_installdir}${tomcat}-${family}.0.${update_version}${external_conf_path}",
+      require => [File[tmp_conf], Exec[app_conf_path]],
+      alias   => "move_conf"
+    }
+
+    exec { 'clean_conf':
+      command   => "rm -rf ${defined_tmpdir}${external_dir}",
+      require   => Exec[move_conf],
+      logoutput => "false"
+    }
   }
 
   if ($defined_deploy_path == $default_deploy) {
