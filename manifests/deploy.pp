@@ -78,23 +78,32 @@ define tomcat::deploy (
 
   if ($external_conf == undef) {
     notify { 'External conf not specified, setting default External conf value to no': }
-    $defined_ext_conf = $external_conf
+    $defined_ext_conf = 'no'
   } else {
     $defined_ext_conf = $external_conf
   }
 
-  if (($defined_ext_conf == 'yes') and ($external_dir == undef or $external_conf_path == undef)) {
-    fail('external dir and  $external conf path parameter must be set if external_conf is equal to yes')
+  if (($defined_ext_conf == 'yes')) {
+    if ($external_conf_path == undef) {
+      notify { 'External conf path not specified, setting default External conf path value to /conf/': }
+      $defined_ext_conf_path = '/conf/'
+    } else {
+      $defined_ext_conf_path = $external_conf_path
+    }
+
+    if ($external_dir == undef) {
+      fail('external dir parameter must be set if external_conf is equal to yes')
+    }
   }
 
   if ($defined_ext_conf == 'yes') {
     exec { 'create_conf_path':
-      command => "mkdir -p ${defined_installdir}${tomcat}-${family}.0.${update_version}${external_conf_path}",
+      command => "mkdir -p ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_ext_conf_path}",
       alias   => "app_conf_path"
     }
 
     file { "${defined_tmpdir}${external_dir}":
-      ensure  => file,
+      ensure  => directory,
       source  => "puppet:///modules/tomcat/${external_dir}",
       require => Exec[app_conf_path],
       alias   => "tmp_conf",
@@ -102,7 +111,7 @@ define tomcat::deploy (
     }
 
     exec { 'move_conf':
-      command => "mv ${defined_tmpdir}${external_dir} ${defined_installdir}${tomcat}-${family}.0.${update_version}${external_conf_path}",
+      command => "mv ${defined_tmpdir}${external_dir} ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_ext_conf_path}",
       require => [File[tmp_conf], Exec[app_conf_path]],
       alias   => "move_conf"
     }

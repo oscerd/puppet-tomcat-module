@@ -47,6 +47,9 @@ If you want to install tomcat and deploy your package with a specific context yo
 	  war_version => "",
 	  deploy_path => "/release/",
 	  context => "/example",
+	  external_conf => "yes",
+	  external_dir => "report/",
+	  external_conf_path => "/conf/",
 	  family => "7",
 	  update_version => "55",
 	  installdir => "/opt/",
@@ -55,7 +58,7 @@ If you want to install tomcat and deploy your package with a specific context yo
 	  }
 ```
 
-Otherwise if you just need to install tomcat and deploy a package, without specify, a context you can use this example manifest:
+Otherwise if you just need to install tomcat and deploy a package, without specify a context you can use this example manifest:
 
 ```puppet
 	tomcat::setup { "tomcat":
@@ -78,6 +81,9 @@ Otherwise if you just need to install tomcat and deploy a package, without speci
 	  war_version => "",
 	  deploy_path => "/webapps/",
 	  context => "",
+	  external_conf => "yes",
+	  external_dir => "report/",
+	  external_conf_path => "/conf/",
 	  family => "7",
 	  update_version => "55",
 	  installdir => "/opt/",
@@ -129,6 +135,11 @@ The Puppet Tomcat module use the following parameters in his deploy phase
 *  __War Version__: The version of the deploying war. This variable will be ignored if war versioned value is _no_
 *  __Deploy Path__: The location where the war must be placed (default is `/webapps/`) 
 *  __Context__: The context of the package we are deploying. If _deploy path_ is different from `/webapps/` then the context will be considered, otherwise it will be skipped.
+*  __External Conf__: This variable defines if the package we are deploying has an external configuration to install. Possible values _yes_ or _no_ (default is _no_)
+*  __External Dir__: The directory that contains the external configuration of the package. The module will search for this directory in `tomcat/files/` folder. If external_conf is equal to _no_, then 
+this variable will be ignored. If external_conf is equal to _yes_ this variable must be specified.
+*  __External Conf Path__: The Tomcat directory that will contains the external configuration directory of the package. Default value is _/conf/_. If external_conf is equal to _no_, then 
+this variable will be ignored. If external_conf is equal to _yes_ this variable must be specified.
 *  __Family__: Possible values of Apache Tomcat version _6_, _7_, _8_ 
 *  __Update Version__: The update version of Apache Tomcat
 *  __Install Directory__: The directory where the Apache Tomcat is installed (default is `/opt/`)
