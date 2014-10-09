@@ -161,7 +161,7 @@ define tomcat::setup (
             group   => 'root',
             require => Exec['move_tomcat'],
             mode    => '0644',
-            content => template('tomcat/serverxml.erb') }
+            content => template("tomcat/${family}/serverxml.erb") }
             
             file { "contextxml":
             path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::context_xml}",
@@ -169,7 +169,7 @@ define tomcat::setup (
             group   => 'root',
             require => Exec['move_tomcat'],
             mode    => '0644',
-            content => template('tomcat/context.erb') }      
+            content => template("tomcat/${family}/context.erb") }      
             
             file { "usersxml":
             path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::users_xml}",
@@ -177,7 +177,7 @@ define tomcat::setup (
             group   => 'root',
             require => Exec['move_tomcat'],
             mode    => '0644',
-            content => template('tomcat/users.erb') }      
+            content => template("tomcat/${family}/users.erb") }      
   }
   
   exec { 'clean_tomcat': 

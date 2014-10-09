@@ -182,7 +182,7 @@ define tomcat::deploy (
       group   => 'root',
       require => [Exec[app_context_path]],
       mode    => '0644',
-      content => template('tomcat/appcontext.erb')
+      content => template("tomcat/${family}/appcontext.erb")
     }
 
     if ($defined_war_versioned == 'no') {
