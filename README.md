@@ -36,6 +36,8 @@ If you want to install tomcat and deploy your package with a specific context yo
 	  tmpdir => "/tmp/",
 	  install_mode => "custom",
 	  data_source => "yes",
+	  driver_db => "yes",
+	  ssl => "no",
 	  users => "yes",
 	  access_log => "yes",
 	  direct_start => "yes"
@@ -70,6 +72,8 @@ Otherwise if you just need to install tomcat and deploy a package, without speci
 	  tmpdir => "/tmp/",
 	  install_mode => "custom",
 	  data_source => "yes",
+	  driver_db => "yes",
+	  ssl => "no",
 	  users => "yes",
 	  access_log => "yes",
 	  direct_start => "yes"
@@ -125,6 +129,9 @@ The Puppet Tomcat module use the following parameters in his setup phase
 *  __Temp Directory__: The directory where the Apache Tomcat package will be extracted (default is `/tmp/`)
 *  __Install Mode__: The installation mode, possible values _clean_ and _custom_. With install mode _clean_ the module will only install Apache Tomcat, while with install mode _custom_ the module will install Apache Tomcat with a customizable version of `server.xml`
 *  __Data Source__: Define the data source's presence, possible values _yes_ and _no_. If the data source value is _yes_ (and the installation mode value is _custom_ ) then the module will add data source section in `server.xml` and `context.xml`
+*  __Driver Db__: Define the presence of database driver to move in tomcat `/lib/` folder from `tomcat/files/` folder, possible values _yes_ and _no_ (default is _no_). If the driver db value is _yes_ (and the data source value is _yes_ and the installation mode value is _custom_ ) then the module will add database driver (.jar o .zip) to tomcat `/lib/` folder. If you want to use the driver you have to 
+place it under `tomcat/files/`
+*  __SSL__: Define the presence of SSL support, possible values _yes_ and _no_.
 *  __Access Log__: Defined if Apache Tomcat access log is enabled, possible values _yes_ and _no_ (default is _no_) and it is used in _custom_ installation
 *  __Direct Start__: Define if Tomcat must directly start, possible values _yes_ and _no_ (default is _no_)
 
@@ -170,6 +177,7 @@ When using the _custom_ installation mode, the module will use the template `tem
 	  
 	# Set max threads in https connector in serverxml.erb
 	$https_max_threads = hiera('tomcat::params::https_max_threads')
+
 ```
 
 When using the _custom_ installation mode with data source value equal to _yes_, the module will customize `conf/server.xml` and `conf/context.xml` (by using `templates/serverxml.erb` and `templates/context.erb` templates) to build a data source. The parameters related to data source are the following (listed in tomcat::data_source class):
@@ -207,6 +215,8 @@ When using the _custom_ installation mode with data source value equal to _yes_,
 	  
 	# Complete URL
 	$ds_url = "${ds_driver}:${ds_dbms}:thin:@${ds_host}:${ds_port}/${ds_service}"
+
+  	$ds_drivername = hiera('tomcat::data_source::ds_drivername')
 ```
 
 In _custom_ installation mode with users value equal to _yes_, the module will customize `conf/tomcat-users.xml` (by using `templates/users.erb` template). The parameters related to users are the following (listed in tomcat::users class):
@@ -254,6 +264,7 @@ The second is called `data_source.yaml`:
 	tomcat::data_source::ds_host: 192.168.52.128
 	tomcat::data_source::ds_port: 1521
 	tomcat::data_source::ds_service: example
+	tomcat::data_source::ds_drivername: ojdbc6.jar
 ```
 
 The third is called `users.yaml`:
