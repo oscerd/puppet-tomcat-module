@@ -8,6 +8,7 @@ define tomcat::setup (
   $installdir = undef,
   $install_mode = undef,
   $data_source = undef,
+  $driver_db = undef,
   $users = undef,
   $access_log = undef,
   $direct_start = undef
@@ -99,6 +100,14 @@ define tomcat::setup (
     $defined_access_log = $access_log
   }
   
+  if($data_source == "yes"){
+	  if($driver_db == undef){
+	    $defined_driver_db = "no"
+	  } else {
+	    $defined_driver_db = $driver_db
+	  }
+  } 
+  
   if ($extension == ".zip"){
     $extractor_command = "unzip"
     $extractor_option_source = ""
@@ -178,6 +187,21 @@ define tomcat::setup (
             require => Exec['move_tomcat'],
             mode    => '0644',
             content => template("tomcat/${family}/users.erb") }      
+            
+            if ($data_source == "yes"){
+              if($defined_driver_db == "yes"){
+                
+                    file { "${defined_tmpdir}${tomcat::data_source::ds_drivername}":
+                            ensure => present,
+                            source => "puppet:///modules/tomcat/${tomcat::data_source::ds_drivername}" }
+                    }
+                    
+                    exec { 'move_driver': 
+                            command => "mv ${defined_tmpdir}${tomcat::data_source::ds_drivername} ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::lib_path}",
+                            require => [ File[ "${defined_tmpdir}${tomcat::data_source::ds_drivername}" ] ],
+                            unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::lib_path}${tomcat::data_source::ds_drivername}" 
+                    }
+            }
   }
   
   exec { 'clean_tomcat': 
