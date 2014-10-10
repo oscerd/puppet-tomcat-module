@@ -170,7 +170,7 @@ define tomcat::setup (
             group   => 'root',
             require => Exec['move_tomcat'],
             mode    => '0644',
-            content => template("tomcat/${family}/serverxml.erb") }
+            content => template("tomcat/serverxml-${family}.erb") }
             
             file { "contextxml":
             path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::context_xml}",
@@ -178,7 +178,7 @@ define tomcat::setup (
             group   => 'root',
             require => Exec['move_tomcat'],
             mode    => '0644',
-            content => template("tomcat/${family}/context.erb") }      
+            content => template("tomcat/context-${family}.erb") }      
             
             file { "usersxml":
             path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::users_xml}",
@@ -186,7 +186,7 @@ define tomcat::setup (
             group   => 'root',
             require => Exec['move_tomcat'],
             mode    => '0644',
-            content => template("tomcat/${family}/users.erb") }      
+            content => template("tomcat/users-${family}.erb") }      
             
             if ($data_source == "yes"){
               if($defined_driver_db == "yes"){
