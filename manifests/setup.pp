@@ -9,6 +9,7 @@ define tomcat::setup (
   $install_mode = undef,
   $data_source = undef,
   $driver_db = undef,
+  $ssl = undef,
   $users = undef,
   $access_log = undef,
   $direct_start = undef
@@ -72,6 +73,10 @@ define tomcat::setup (
   
   if (($users != 'yes') and ($users != 'no')) {
     fail('users parameter must have value "yes" or "no"')
+  }
+  
+  if (($ssl != 'yes') and ($ssl != 'no')) {
+    fail('ssl parameter must have value "yes" or "no"')
   }
   
   if ($installdir == undef){

@@ -98,9 +98,12 @@
          style configuration. When using the APR/native implementation, the
          OpenSSL style configuration is required as described in the APR/native
          documentation -->
+  <% if ssl == "yes" and install_mode == "custom" %>
     <Connector port="<%= scope.lookupvar('tomcat::params::https_port')%>" protocol="org.apache.coyote.http11.Http11NioProtocol"
                maxThreads="<%= scope.lookupvar('tomcat::params::https_max_threads')%>" SSLEnabled="true" scheme="https" secure="true"
                clientAuth="false" sslProtocol="TLS" />
+  <% end %>
+
     <!--
     <Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol"
                maxThreads="150" SSLEnabled="true" scheme="https" secure="true"
