@@ -155,7 +155,7 @@ this variable will be ignored. If external_conf is equal to _yes_ this variable 
 Customization
 -----------------
 
-When using the _custom_ installation mode, the module will use the template `templates/serverxml.erb` to build a `server.xml` custom file, by using __Hiera__. The module will use the following parameters (listed in tomcat::params class):
+When using the _custom_ installation mode, the module will use the template `templates/serverxml.erb` (related to the specific tomcat version) to build a `server.xml` custom file, by using __Hiera__. The module will use the following parameters (listed in tomcat::params class):
 
 ```puppet
 	# Server.xml parameters
@@ -178,9 +178,14 @@ When using the _custom_ installation mode, the module will use the template `tem
 	# Set max threads in https connector in serverxml.erb
 	$https_max_threads = hiera('tomcat::params::https_max_threads')
 
+	# Set the keystore file
+	$https_keystore = hiera('tomcat::params::https_keystore')
+	  
+	# Set the keystore file password
+	$https_keystore_pwd = hiera('tomcat::params::https_keystore_pwd')
 ```
 
-When using the _custom_ installation mode with data source value equal to _yes_, the module will customize `conf/server.xml` and `conf/context.xml` (by using `templates/serverxml.erb` and `templates/context.erb` templates) to build a data source. The parameters related to data source are the following (listed in tomcat::data_source class):
+When using the _custom_ installation mode with data source value equal to _yes_, the module will customize `conf/server.xml` and `conf/context.xml` (by using `templates/serverxml.erb` and `templates/context.erb` templates related to the specific tomcat version) to build a data source. The parameters related to data source are the following (listed in tomcat::data_source class):
 
 ```puppet
 	# Datasource
