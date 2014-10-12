@@ -335,7 +335,7 @@ Working Example
 I'm starting to commit some working example of the module. The first is:
 
 * A CentOS 6.5 x64 Vagrant Machine with a clean installation of tomcat and the deploy of sample Application WAR. Here is the repository: __https://github.com/oscerd/vagrant-centos6.5-tomcat__
-* A CentOS 6.5 x64 and Debian 7.5 x64 Vagrant Multi-Machine both with a custom installation of tomcat and the deploy of sample Application WAR with different context. Here is the repository: __https://github.com/oscerd/vagrant-multiVM-tomcat__
+* A CentOS 6.5 x64 and Debian 7.5 x64 Vagrant Multi-Machine. The two VMs have a custom installation of tomcat and the deploy of sample Application WAR with different context. Here is the repository: __https://github.com/oscerd/vagrant-multiVM-tomcat__
 
 Contributing
 -----------------
