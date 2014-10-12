@@ -131,7 +131,7 @@ The Puppet Tomcat module use the following parameters in his setup phase
 *  __Data Source__: Define the data source's presence, possible values _yes_ and _no_. If the data source value is _yes_ (and the installation mode value is _custom_ ) then the module will add data source section in `server.xml` and `context.xml`
 *  __Driver Db__: Define the presence of database driver to move in tomcat `/lib/` folder from `tomcat/files/` folder, possible values _yes_ and _no_ (default is _no_). If the driver db value is _yes_ (and the data source value is _yes_ and the installation mode value is _custom_ ) then the module will add database driver (.jar o .zip) to tomcat `/lib/` folder. If you want to use the driver you have to 
 place it under `tomcat/files/`
-*  __SSL__: Define the presence of SSL support, possible values _yes_ and _no_.
+*  __SSL__: Define the presence of SSL support, possible values _yes_ and _no_. If the value is _yes_ put the keystore file in `tomcat/files/` and specify the keystore and the parameter in the hiera file.
 *  __Access Log__: Defined if Apache Tomcat access log is enabled, possible values _yes_ and _no_ (default is _no_) and it is used in _custom_ installation
 *  __Direct Start__: Define if Tomcat must directly start, possible values _yes_ and _no_ (default is _no_)
 
@@ -245,8 +245,11 @@ The first is called `configuration.yaml` (because in my example I always use YAM
 	tomcat::params::shutdown_port: 8001
 	tomcat::params::http_connection_timeout: 20000
 	tomcat::params::https_max_threads: 150
+	tomcat::params::https_keystore: keystore
+	tomcat::params::https_keystore_pwd: password
 	tomcat::params::web_repository: http://apache.fastbull.org/tomcat/
 ```
+If you don't want to use SSL and so you don't need a keystore leave the keystore related parameters empty or with random values, they will be ignored, same for the https port.
 
 The second is called `data_source.yaml`:
 

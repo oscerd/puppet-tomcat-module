@@ -203,10 +203,23 @@ define tomcat::setup (
                     
                     exec { 'move_driver': 
                             command => "mv ${defined_tmpdir}${tomcat::data_source::ds_drivername} ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::lib_path}",
-                            require => [ File[ "${defined_tmpdir}${tomcat::data_source::ds_drivername}" ] ],
+                            require => [ File[ "${defined_tmpdir}${tomcat::data_source::ds_drivername}" ], Exec ["move_tomcat"] ],
                             unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::lib_path}${tomcat::data_source::ds_drivername}" 
                     }
             }
+            
+           if($ssl == "yes"){
+                   file { "${defined_tmpdir}${tomcat::params::https_keystore}":
+                            ensure => present,
+                            source => "puppet:///modules/tomcat/${tomcat::params::https_keystore}" }
+                    
+                    exec { 'move_keystore': 
+                            command => "mv ${defined_tmpdir}${tomcat::params::https_keystore} ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::conf_path}",
+                            require => [ File[ "${defined_tmpdir}${tomcat::params::https_keystore}" ], Exec ["move_tomcat"] ],
+                            unless => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::conf_path}${tomcat::params::https_keystore}" 
+                    }
+            }
+            
   }
   
   exec { 'clean_tomcat': 

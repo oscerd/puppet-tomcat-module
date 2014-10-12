@@ -101,7 +101,8 @@
   <% if ssl == "yes" and install_mode == "custom" %>
     <Connector port="<%= scope.lookupvar('tomcat::params::https_port')%>" protocol="org.apache.coyote.http11.Http11NioProtocol"
                maxThreads="<%= scope.lookupvar('tomcat::params::https_max_threads')%>" SSLEnabled="true" scheme="https" secure="true"
-               clientAuth="false" sslProtocol="TLS" />
+               clientAuth="false" sslProtocol="TLS" keystoreFile="${catalina.home}/conf/<%= scope.lookupvar('tomcat::params::https_keystore')%>" 
+               keystorePass="<%= scope.lookupvar('tomcat::params::https_keystore_pwd')%>"/>
   <% end %>
 
     <!--

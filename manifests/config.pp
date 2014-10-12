@@ -6,4 +6,5 @@ class tomcat::config{
   $users_xml = "/conf/tomcat-users.xml"
   $context_path = "/conf/Catalina/localhost/"
   $lib_path = "/lib/"
+  $conf_path = "/conf/"
 }
