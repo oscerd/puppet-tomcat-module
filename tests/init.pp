@@ -36,6 +36,7 @@ tomcat::deploy { "deploy":
   war_version => "",
   deploy_path => "/release/",
   context => "/example",
+  symbolic_link => "",
   external_conf => "yes",
   external_dir => "report/",
   external_conf_path => "",

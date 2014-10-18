@@ -44,7 +44,7 @@
               factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
               pathname="conf/tomcat-users.xml" />
 
-  <% if data_source == "yes" and install_mode == "custom" %>
+  <% if @data_source == "yes" and @install_mode == "custom" %>
    <Resource 
 	name="<%= scope.lookupvar('tomcat::data_source::ds_resource_name') %>" 
 	auth="Container"
@@ -97,7 +97,7 @@
          This connector uses the JSSE configuration, when using APR, the 
          connector should be using the OpenSSL style configuration
          described in the APR documentation -->
-  <% if ssl == "yes" and install_mode == "custom" %>
+  <% if @ssl == "yes" and @install_mode == "custom" %>
     <Connector port="<%= scope.lookupvar('tomcat::params::https_port')%>" protocol="org.apache.coyote.http11.Http11Protocol"
                maxThreads="<%= scope.lookupvar('tomcat::params::https_max_threads')%>" SSLEnabled="true" scheme="https" secure="true"
                clientAuth="false" sslProtocol="TLS" keystoreFile="${catalina.home}/conf/<%= scope.lookupvar('tomcat::params::https_keystore')%>" 
@@ -155,7 +155,7 @@
 
         <!-- Access log processes all example.
              Documentation at: /docs/config/valve.html -->
-       <% if defined_access_log == "yes" %>
+       <% if @defined_access_log == "yes" %>
         <!-- SingleSignOn valve, share authentication between web applications
              Documentation at: /docs/config/valve.html -->
         <!--

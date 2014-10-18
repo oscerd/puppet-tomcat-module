@@ -1,5 +1,9 @@
 ## To Be Released- 1.0.4
 ### Summary
+- This release add the possibility to add a DB driver to Tomcat lib folder and use it for the data source configuration in tomcat::setup stage
+- The .erb templates file are now divided for Tomcat version (6,7 and 8 are supported)
+- This release add optional SSL support in tomcat::setup stage
+- This release add optional symbolic link to define context of a versioned .war package
 
 ## 05-10-2014 - Release - 1.0.3
 ### Summary

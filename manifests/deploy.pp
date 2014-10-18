@@ -5,6 +5,7 @@ define tomcat::deploy (
   $war_version        = undef,
   $deploy_path        = undef,
   $context            = undef,
+  $symbolic_link      = undef,
   $external_conf      = undef,
   $external_dir       = undef,
   $external_conf_path = undef,
@@ -30,6 +31,7 @@ define tomcat::deploy (
   }
 
   if ($war_versioned == undef) {
+    notify { 'War versioned not specified, setting War versioned to no': }
     $defined_war_versioned = 'no'
   } else {
     $defined_war_versioned = $war_versioned
@@ -43,7 +45,7 @@ define tomcat::deploy (
 
   if ($defined_war_versioned == 'no') {
     if ($war_version != undef) {
-      notify { "war version parameter setted, but war versioned parameter is set to yes. Ignoring war version.": }
+      notify { "war version parameter setted, but war versioned parameter is set to no. Ignoring war version.": }
     }
   }
 
@@ -74,6 +76,17 @@ define tomcat::deploy (
 
   if (($defined_deploy_path != $default_deploy) and ($context == undef)) {
     fail('context parameter must be set if deploy path is different from /webapps/')
+  }
+  
+  if (($symbolic_link == undef)){
+    notify { 'Symbolic link not specified, setting default Symbolic link value to no': }
+    $defined_symbolic_link = 'no'
+  } else {
+    $defined_symbolic_link = $symbolic_link
+  }
+  
+  if (($symbolic_link == 'yes') and ($war_versioned == 'no')){
+    notify { 'Symbolic link setted to yes, but deploying package is not versioned. Symbolic link will be ignored': }
   }
 
   if ($external_conf == undef) {
@@ -198,7 +211,7 @@ define tomcat::deploy (
         require => [File[tmp_war], Exec[alternative_deploy_path], File["app_context_xml"]],
         unless  => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}",
         alias   => "move_war"
-      }
+      } 
 
       exec { 'clean_war':
         command   => "rm -rf ${defined_tmpdir}${war_name}${extension}",
@@ -218,6 +231,15 @@ define tomcat::deploy (
         require => [File[tmp_war], Exec[alternative_deploy_path], File["app_context_xml"]],
         unless  => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}-${war_version}",
         alias   => "move_war"
+      }
+      
+      if ($defined_symbolic_link == 'yes'){
+	      exec { 'create_ln':
+	        command => "ln -s ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}-${war_version}${extension} ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}${extension}",
+	        require => [Exec[move_war],Exec[alternative_deploy_path], File["app_context_xml"]],
+	        unless  => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}${extension}",
+	        alias   => "create_ln"
+	      }
       }
 
       exec { 'clean_war':

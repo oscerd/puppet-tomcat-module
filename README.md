@@ -49,6 +49,7 @@ If you want to install tomcat and deploy your package with a specific context yo
 	  war_version => "",
 	  deploy_path => "/release/",
 	  context => "/example",
+	  symbolic_link => "",
 	  external_conf => "yes",
 	  external_dir => "report/",
 	  external_conf_path => "/conf/",
@@ -85,6 +86,7 @@ Otherwise if you just need to install tomcat and deploy a package, without speci
 	  war_version => "",
 	  deploy_path => "/webapps/",
 	  context => "",
+	  symbolic_link => "",
 	  external_conf => "yes",
 	  external_dir => "report/",
 	  external_conf_path => "/conf/",
@@ -95,6 +97,44 @@ Otherwise if you just need to install tomcat and deploy a package, without speci
 	  require => Tomcat::Setup["tomcat"]
 	  }
 ```
+
+If your package is versioned and you want to specify a context, you can use a manifest like this:
+
+```puppet
+	tomcat::setup { "tomcat":
+	  family => "7",
+	  update_version => "55",
+	  extension => ".zip",
+	  source_mode => "local",
+	  installdir => "/opt/",
+	  tmpdir => "/tmp/",
+	  install_mode => "custom",
+	  data_source => "yes",
+	  driver_db => "yes",
+	  ssl => "no",
+	  users => "yes",
+	  access_log => "yes",
+	  direct_start => "yes"
+	  }
+
+	tomcat::deploy { "deploy":
+	  war_name => "sample",
+	  war_versioned => "yes",
+	  war_version => "1.0",
+	  deploy_path => "/release/",
+	  context => "/example",
+	  symbolic_link => "yes",
+	  external_conf => "yes",
+	  external_dir => "report/",
+	  external_conf_path => "/conf/",
+	  family => "7",
+	  update_version => "55",
+	  installdir => "/opt/",
+	  tmpdir => "/tmp/",
+	  require => Tomcat::Setup["tomcat"]
+	  }
+```
+
 
 It's important to define a global search path for the `exec` resource to make module work. 
 This should usually be placed in `manifests/site.pp`. It is also important to make sure `unzip` and `tar` command 
@@ -142,6 +182,7 @@ The Puppet Tomcat module use the following parameters in his deploy phase
 *  __War Version__: The version of the deploying war. This variable will be ignored if war versioned value is _no_
 *  __Deploy Path__: The location where the war must be placed (default is `/webapps/`) 
 *  __Context__: The context of the package we are deploying. If _deploy path_ is different from `/webapps/` then the context will be considered, otherwise it will be skipped.
+*  __Symbolic link__: This variable defines if we want a symbolic link related to deploying war. Possible values _yes_ or _no_ (default is _no_). If _symbolic link_ is equal to yes, _deploy path_ is different from `/webapps/`, _war versioned_ is equal to yes and there is a defined _context_, the module will create a symbolic link called _war name_.war pointing to the deploying war. With this feature there will be no need to modify the xml file where the context is defined to change the war. You will only need to change the symbolic link and make it pointing to the new war.
 *  __External Conf__: This variable defines if the package we are deploying has an external configuration to install. Possible values _yes_ or _no_ (default is _no_)
 *  __External Dir__: The directory that contains the external configuration of the package. The module will search for this directory in `tomcat/files/` folder. If external_conf is equal to _no_, then 
 this variable will be ignored. If external_conf is equal to _yes_ this variable must be specified.
