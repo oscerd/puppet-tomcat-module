@@ -116,11 +116,19 @@ define tomcat::undeploy (
   }
 
   exec { 'sleep': command => "sleep 10", }
-
-  exec { 'shutdown':
-    command => "${installdir}${tomcat}-${family}.0.${update_version}/bin/shutdown.sh",
-    onlyif  => "ps -eaf | grep ${installdir}${tomcat}-${family}.0.${update_version}",
-    require => Exec["sleep"]
+  
+  if ($defined_as_service == "no") {
+	  exec { 'shutdown':
+	    command => "${installdir}${tomcat}-${family}.0.${update_version}/bin/shutdown.sh",
+	    onlyif  => "ps -eaf | grep ${installdir}${tomcat}-${family}.0.${update_version}",
+	    require => Exec["sleep"]
+	  }  
+  } else {
+    exec { 'shutdown':
+      command => "service tomcat stop",
+      onlyif  => "ps -eaf | grep ${installdir}${tomcat}-${family}.0.${update_version}",
+      require => Exec["sleep"]
+    } 
   }
 
   if ($defined_deploy_path == $default_deploy) {

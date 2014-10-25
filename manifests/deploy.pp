@@ -12,7 +12,10 @@ define tomcat::deploy (
   $family             = undef,
   $update_version     = undef,
   $installdir         = undef,
-  $tmpdir             = undef) {
+  $tmpdir             = undef,
+  $hot_deploy         = undef,
+  $as_service         = undef,
+  $direct_restart     = undef) {
   $extension = ".war"
   $tomcat = "apache-tomcat"
   $default_deploy = "/webapps/"
@@ -29,6 +32,14 @@ define tomcat::deploy (
   if ($update_version == undef) {
     fail('update version parameter must be set')
   }
+  
+  if ($hot_deploy == undef) {
+    fail('hot deploy parameter must be set')
+  }
+  
+  if (($hot_deploy != 'yes') and ($hot_deploy != 'no')) {
+    fail('hot deploy parameter must have value "yes" or "no"')
+  }
 
   if ($war_versioned == undef) {
     notify { 'War versioned not specified, setting War versioned to no': }
@@ -42,11 +53,27 @@ define tomcat::deploy (
       fail('war version parameter must be set, if war versioned parameter is set to yes')
     }
   }
+  
+  if (($hot_deploy == "yes") and ($direct_restart != undef)){
+     notify { "direct restart parameter setted, but hot deploy parameter is equal to no. Ignoring direct restart parameter.": }
+  }
 
   if ($defined_war_versioned == 'no') {
     if ($war_version != undef) {
       notify { "war version parameter setted, but war versioned parameter is set to no. Ignoring war version.": }
     }
+  }
+  
+  if ($as_service == undef) {
+    $defined_as_service = "no"
+  } else {
+    $defined_as_service = $as_service
+  }
+  
+  if ($direct_restart == undef) {
+    $restart = "yes"
+  } else {
+    $restart = $direct_restart
   }
 
   if ($deploy_path == undef) {
@@ -108,6 +135,24 @@ define tomcat::deploy (
       fail('external dir parameter must be set if external_conf is equal to yes')
     }
   }
+  
+  
+  exec { 'sleep': command => "sleep 10", }
+  
+  if ($hot_deploy == "no"){
+    if ($as_service == "yes"){
+      exec { "stop_tomcat_as_service":
+        command => "service tomcat stop",
+        onlyif  => "ps -eaf | grep ${installdir}${tomcat}-${family}.0.${update_version}",
+        require => Exec["sleep"]
+        }
+    } else {
+		  exec { "stop_tomcat":
+		    command => "${installdir}${tomcat}-${family}.0.${update_version}/bin/shutdown.sh",
+		    onlyif  => "ps -eaf | grep ${installdir}${tomcat}-${family}.0.${update_version}",
+        require => Exec["sleep"]}
+		  }
+    }
 
   if ($defined_ext_conf == 'yes') {
     exec { 'create_conf_path':
@@ -249,4 +294,24 @@ define tomcat::deploy (
       }
     }
   }
+
+  if ($hot_deploy == "no"){ 
+	  if ($defined_as_service == 'no') {
+	    if ($restart == 'yes') {
+	      exec { 'restart':
+	        command => "${installdir}${tomcat}-${family}.0.${update_version}/bin/startup.sh",
+	        unless  => "ps -eaf | grep ${installdir}${tomcat}-${family}.0.${update_version}",
+	        require => [Exec["stop_tomcat"],Exec[move_war]]
+	       }
+	     }
+	  } elsif ($defined_as_service == "yes") {
+	    if ($restart == 'yes') {
+	      exec { "restart_tomcat":
+	        command => "service tomcat start",
+	        require => [Exec["stop_tomcat_as_service"],Exec[move_war]],
+	        unless => "ls /etc/init.d/tomcat"
+	      }
+	    }
+	  }
+ }
 }
