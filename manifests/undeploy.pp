@@ -10,7 +10,9 @@ define tomcat::undeploy (
   $external_conf_path = undef,
   $family             = undef,
   $update_version     = undef,
-  $installdir         = undef) {
+  $installdir         = undef,
+  $as_service         = undef,
+  $direct_restart     = undef) {
   $extension = ".war"
   $tomcat = "apache-tomcat"
   $default_deploy = "/webapps/"
@@ -35,6 +37,19 @@ define tomcat::undeploy (
     $defined_war_versioned = $war_versioned
   }
 
+
+  if ($as_service == undef) {
+    $defined_as_service = "no"
+  } else {
+    $defined_as_service = $as_service
+  }
+  
+  if ($direct_restart == undef) {
+    $restart = "no"
+  } else {
+    $restart = $direct_restart
+  }
+  
   if ($defined_war_versioned == 'yes') {
     if ($war_version == undef) {
       fail('war version parameter must be set, if war versioned parameter is set to yes')
@@ -215,9 +230,21 @@ define tomcat::undeploy (
     }
   }
   
-  exec { 'restart':
-    command => "${installdir}${tomcat}-${family}.0.${update_version}/bin/startup.sh",
-    onlyif  => "ps -eaf | grep ${installdir}${tomcat}-${family}.0.${update_version}",
-    require => [Exec["sleep"], Exec["shutdown"],Exec[delete_package],Exec[delete_folder]]
+  if ($defined_as_service == 'no') {
+	  if ($restart == 'yes') {
+		  exec { 'restart':
+		    command => "${installdir}${tomcat}-${family}.0.${update_version}/bin/startup.sh",
+		    onlyif  => "ps -eaf | grep ${installdir}${tomcat}-${family}.0.${update_version}",
+		    require => [Exec["sleep"], Exec["shutdown"],Exec[delete_package],Exec[delete_folder]]
+		   }
+	   }
+  } elsif ($defined_as_service == "yes") {
+    if ($restart == 'yes') {
+      exec { "restart_tomcat":
+        command => "service tomcat start",
+        require => [Exec["sleep"], Exec["shutdown"],Exec[delete_package],Exec[delete_folder]],
+        unless => "ls /etc/init.d/tomcat"
+      }
+    }
   }
 }

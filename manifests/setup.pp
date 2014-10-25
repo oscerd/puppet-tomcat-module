@@ -276,7 +276,7 @@ define tomcat::setup (
       }
       
       exec { "start_tomcat":
-        command => "/etc/init.d/tomcat start",
+        command => "service tomcat start",
         require => [File[tomcat_service], Exec[make_executable], Exec[make_tomcat_service_exec], Exec['move_tomcat']]
       }
   }
