@@ -166,7 +166,7 @@ If you need to undeploy the package of the example you can do in this way:
 	  installdir => "/opt/",
 	  as_service => "yes",
 	  direct_restart => "yes",
-	  require => Tomcat::Setup["tomcat"]
+	  require => Tomcat::Deploy["deploy"]
 	  }
 ```
 
