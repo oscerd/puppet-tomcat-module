@@ -30,7 +30,7 @@ restart() {
 }
 
 status() {
-  ps -aef | grep apache-tomcat | grep -v tomcat6 | grep -v grep
+  ps -aef | grep apache-tomcat | grep -v tomcat<%= @family %> | grep -v grep
 }
 
 # Handle the different input options
