@@ -229,7 +229,7 @@ this variable will be ignored. If external_conf is equal to _yes_ this variable 
 *  __Temp Directory__: The directory where the war must be placed before being moved to _deploy path_ directory (default is `/tmp/`)
 *  __Hot Deploy__: Define if Tomcat must be shutdown or not before the deploy, possible values _yes_ and _no_.
 *  __As Service__: Define if Tomcat is defined as a service, possible values _yes_ and _no_ (default is _no_). If hot deploy is equal to _no_ then this parameter will be ignored.
-*  __Direct Start__: Define if Tomcat must directly restart, possible values _yes_ and _no_ (default is _no_). If hot deploy is equal to _no_ then this parameter will be ignored. If hot deploy is equal to _yes_ and as service is equal to _yes_ then if this parameter is equal to _yes_ then tomcat will be restarted as service (`service tomcat start`) otherwise it will be restarted normally.
+*  __Direct Restart__: Define if Tomcat must directly restart, possible values _yes_ and _no_ (default is _no_). If hot deploy is equal to _no_ then this parameter will be ignored. If hot deploy is equal to _yes_ and as service is equal to _yes_ then if this parameter is equal to _yes_ then tomcat will be restarted as service (`service tomcat start`) otherwise it will be restarted normally.
 
 The Puppet Tomcat module use the following parameters in his __Undeploy__ phase
 
@@ -247,7 +247,7 @@ this variable will be ignored. If external_conf is equal to _yes_ this variable 
 *  __Update Version__: The update version of the Apache Tomcat installation that contains the package we are undeploying 
 *  __Install Directory__: The directory where the Apache Tomcat, that contains the package we are undeploying, is installed (default is `/opt/`)
 *  __As Service__: Define if Tomcat is defined as a service, possible values _yes_ and _no_ (default is _no_). If hot deploy is equal to _no_ then this parameter will be ignored.
-*  __Direct Start__: Define if Tomcat must directly restart after the undeploy, possible values _yes_ and _no_ (default is _no_). If as service is equal to _yes_ and this parameter is equal to _yes_ then tomcat will be restarted as service (`service tomcat start`) otherwise it will be restarted normally.
+*  __Direct Restart__: Define if Tomcat must directly restart after the undeploy, possible values _yes_ and _no_ (default is _no_). If as service is equal to _yes_ and this parameter is equal to _yes_ then tomcat will be restarted as service (`service tomcat start`) otherwise it will be restarted normally.
 
 Customization
 -----------------
