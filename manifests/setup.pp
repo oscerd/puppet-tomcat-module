@@ -79,14 +79,12 @@ define tomcat::setup (
   }
 
   if ($installdir == undef) {
-    notify { 'Install folder not specified, setting default install folder /opt/': }
     $defined_installdir = '/opt/'
   } else {
     $defined_installdir = $installdir
   }
 
   if ($tmpdir == undef) {
-    notify { 'Temp folder not specified, setting default install folder /tmp/': }
     $defined_tmpdir = '/tmp/'
   } else {
     $defined_tmpdir = $tmpdir
@@ -139,25 +137,25 @@ define tomcat::setup (
       source => "puppet:///modules/tomcat/${tomcat}-${family}.0.${update_version}${extension}"
     }
 
-    exec { 'extract_tomcat':
+    exec { "tomcat::setup::extract_tomcat::${tomcat}-${family}.0.${update_version}":
       command => "${extractor_command} ${extractor_option_source} ${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension} ${extractor_option_dir} ${defined_tmpdir}",
       require => [File["${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension}"], Package['tar'], Package['unzip']],
       unless  => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}/",
-      alias   => extract_tomcat
+      alias   => "tomcat::setup::extract_tomcat::${tomcat}-${family}.0.${update_version}"
     }
   } elsif ($source_mode == "web") {
     $source = "${web_repo_path}tomcat-${family}/v${family}.0.${update_version}/bin/${tomcat}-${family}.0.${update_version}${extension}"
 
-    exec { 'retrieve_tomcat':
+    exec { "tomcat::setup::retrieve_tomcat::${tomcat}-${family}.0.${update_version}":
       command => "wget -q ${source} -P ${defined_tmpdir}",
       unless  => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}/",
       timeout => 1000
     }
 
-    exec { 'extract_tomcat':
+    exec { "tomcat::setup::extract_tomcat::${tomcat}-${family}.0.${update_version}":
       command => "${extractor_command} ${extractor_option_source} ${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension} ${extractor_option_dir} ${defined_tmpdir}",
-      require => [Exec['retrieve_tomcat']],
-      alias   => extract_tomcat
+      require => [Exec[ "tomcat::setup::retrieve_tomcat::${tomcat}-${family}.0.${update_version}"]],
+      alias   => "tomcat::setup::extract_tomcat::${tomcat}-${family}.0.${update_version}"
     }
   }
 
@@ -165,39 +163,39 @@ define tomcat::setup (
     ensure => directory,
     mode   => '755',
     owner  => 'root',
-    alias  => tomcat_home
+    alias  => "tomcat::setup::tomcat_home::${tomcat}-${family}.0.${update_version}"
   }
 
-  exec { 'move_tomcat':
+  exec { "tomcat::setup::move_tomcat::${tomcat}-${family}.0.${update_version}":
     command => "mv ${defined_tmpdir}${tomcat}-${family}.0.${update_version}/ ${defined_installdir}",
-    require => [File[tomcat_home], Exec[extract_tomcat]],
+    require => [File["tomcat::setup::tomcat_home::${tomcat}-${family}.0.${update_version}"], Exec["tomcat::setup::extract_tomcat::${tomcat}-${family}.0.${update_version}"]],
     unless  => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}/"
   }
 
   if ($install_mode == "custom") {
-    file { "serverxml":
+    file { "tomcat::setup::serverxml::${tomcat}-${family}.0.${update_version}":
       path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::server_xml}",
       owner   => 'root',
       group   => 'root',
-      require => Exec['move_tomcat'],
+      require => Exec["tomcat::setup::move_tomcat::${tomcat}-${family}.0.${update_version}"],
       mode    => '0644',
       content => template("tomcat/serverxml-${family}.erb")
     }
 
-    file { "contextxml":
+    file { "tomcat::setup::contextxml::${tomcat}-${family}.0.${update_version}":
       path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::context_xml}",
       owner   => 'root',
       group   => 'root',
-      require => Exec['move_tomcat'],
+      require => Exec["tomcat::setup::move_tomcat::${tomcat}-${family}.0.${update_version}"],
       mode    => '0644',
       content => template("tomcat/context-${family}.erb")
     }
 
-    file { "usersxml":
+    file { "tomcat::setup::usersxml::${tomcat}-${family}.0.${update_version}":
       path    => "${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::users_xml}",
       owner   => 'root',
       group   => 'root',
-      require => Exec['move_tomcat'],
+      require => Exec["tomcat::setup::move_tomcat::${tomcat}-${family}.0.${update_version}"],
       mode    => '0644',
       content => template("tomcat/users-${family}.erb")
     }
@@ -210,9 +208,9 @@ define tomcat::setup (
         }
       }
 
-      exec { 'move_driver':
+      exec { "tomcat::setup::move_driver::${tomcat}-${family}.0.${update_version}":
         command => "mv ${defined_tmpdir}${tomcat::data_source::ds_drivername} ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::lib_path}",
-        require => [File["${defined_tmpdir}${tomcat::data_source::ds_drivername}"], Exec["move_tomcat"]],
+        require => [File["${defined_tmpdir}${tomcat::data_source::ds_drivername}"], Exec["tomcat::setup::move_tomcat::${tomcat}-${family}.0.${update_version}"]],
         unless  => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::lib_path}${tomcat::data_source::ds_drivername}"
       }
     }
@@ -223,61 +221,61 @@ define tomcat::setup (
         source => "puppet:///modules/tomcat/${tomcat::params::https_keystore}"
       }
 
-      exec { 'move_keystore':
+      exec { "tomcat::setup::move_keystore::${tomcat}-${family}.0.${update_version}":
         command => "mv ${defined_tmpdir}${tomcat::params::https_keystore} ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::conf_path}",
-        require => [File["${defined_tmpdir}${tomcat::params::https_keystore}"], Exec["move_tomcat"]],
+        require => [File["${defined_tmpdir}${tomcat::params::https_keystore}"], Exec["tomcat::setup::move_tomcat::${tomcat}-${family}.0.${update_version}"]],
         unless  => "ls ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::conf_path}${tomcat::params::https_keystore}"
       }
     }
 
   }
 
-  exec { 'clean_tomcat':
+  exec { "tomcat::setup::clean_tomcat::${tomcat}-${family}.0.${update_version}":
     command   => "rm -rf ${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension}",
-    require   => Exec['move_tomcat'],
+    require   => Exec["tomcat::setup::move_tomcat::${tomcat}-${family}.0.${update_version}"],
     logoutput => "false"
   }
 
   if ($defined_as_service == 'no') {
     if ($start == "yes") {
-      exec { "make_executable":
+      exec { "tomcat::setup::make_executable::${tomcat}-${family}.0.${update_version}":
         command => "chmod +x ${installdir}${tomcat}-${family}.0.${update_version}/bin/*.sh",
-        require => Exec['move_tomcat'],
-        alias   => "executable"
+        require => Exec["tomcat::setup::move_tomcat::${tomcat}-${family}.0.${update_version}"],
+        alias   => "tomcat::setup::make_executable::${tomcat}-${family}.0.${update_version}"
       }
 
-      exec { "start_tomcat":
+      exec { "tomcat::setup::start_tomcat::${tomcat}-${family}.0.${update_version}":
         command => "${installdir}${tomcat}-${family}.0.${update_version}/bin/startup.sh",
-        require => [Exec[executable], Exec['move_tomcat']]
+        require => [Exec["tomcat::setup::make_executable::${tomcat}-${family}.0.${update_version}"], Exec["tomcat::setup::move_tomcat::${tomcat}-${family}.0.${update_version}"]]
       }
     }
   } elsif ($defined_as_service == "yes") {
-    file { "tomcat-service_sh":
+    file { "tomcat::setup::tomcat-service_sh::${tomcat}-${family}.0.${update_version}":
       path    => "/etc/init.d/tomcat",
       owner   => 'root',
       group   => 'root',
       mode    => '0644',
       content => template("tomcat/tomcat-service.erb"),
-      alias => "tomcat_service",
-      require => Exec['move_tomcat']
+      alias => "tomcat::setup::tomcat-service_sh::${tomcat}-${family}.0.${update_version}",
+      require => Exec["tomcat::setup::move_tomcat::${tomcat}-${family}.0.${update_version}"]
     }
 
-      exec { "make_tomcat_service_exec":
+      exec { "tomcat::setup::make_tomcat_service_exec::${tomcat}-${family}.0.${update_version}":
         command => "chmod u+x /etc/init.d/tomcat",
-        require => [File[tomcat_service],Exec['move_tomcat']],
+        require => [File["tomcat::setup::tomcat-service_sh::${tomcat}-${family}.0.${update_version}"],Exec["tomcat::setup::move_tomcat::${tomcat}-${family}.0.${update_version}"]],
         alias => "make_tomcat_service_exec"
       }
    
     if ($start == "yes") {
-      exec { "make_executable":
+      exec { "tomcat::setup::make_executable::${tomcat}-${family}.0.${update_version}":
         command => "chmod +x ${installdir}${tomcat}-${family}.0.${update_version}/bin/*.sh",
-        require => Exec['move_tomcat'],
-        alias   => "executable"
+        require => Exec["tomcat::setup::move_tomcat::${tomcat}-${family}.0.${update_version}"],
+        alias   => "tomcat::setup::make_executable::${tomcat}-${family}.0.${update_version}"
       }
       
-      exec { "start_tomcat":
+      exec { "tomcat::setup::start_tomcat::${tomcat}-${family}.0.${update_version}":
         command => "service tomcat start",
-        require => [File[tomcat_service], Exec[make_executable], Exec[make_tomcat_service_exec], Exec['move_tomcat']]
+        require => [File["tomcat::setup::tomcat-service_sh::${tomcat}-${family}.0.${update_version}"], Exec["tomcat::setup::make_executable::${tomcat}-${family}.0.${update_version}"], Exec["tomcat::setup::make_tomcat_service_exec::${tomcat}-${family}.0.${update_version}"], Exec["tomcat::setup::move_tomcat::${tomcat}-${family}.0.${update_version}"]]
       }
   }
   }

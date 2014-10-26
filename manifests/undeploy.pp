@@ -31,12 +31,10 @@ define tomcat::undeploy (
   }
 
   if ($war_versioned == undef) {
-    notify { 'War versioned not specified, setting War versioned to no': }
     $defined_war_versioned = 'no'
   } else {
     $defined_war_versioned = $war_versioned
   }
-
 
   if ($as_service == undef) {
     $defined_as_service = "no"
@@ -56,28 +54,16 @@ define tomcat::undeploy (
     }
   }
 
-  if ($defined_war_versioned == 'no') {
-    if ($war_version != undef) {
-      notify { "war version parameter setted, but war versioned parameter value is equal to no. Ignoring war version.": }
-    }
-  }
-
   if ($deploy_path == undef) {
-    notify { 'Deploy path not specified, setting to default deploy folder /webapps/': }
     $defined_deploy_path = $default_deploy
   } else {
     $defined_deploy_path = $deploy_path
   }
 
   if ($installdir == undef) {
-    notify { 'Install folder not specified, setting to default install folder /opt/': }
     $defined_installdir = '/opt/'
   } else {
     $defined_installdir = $installdir
-  }
-
-  if (($defined_deploy_path == $default_deploy) and ($context != undef)) {
-    notify { 'deploy path is default so context will not be considered': }
   }
 
   if (($defined_deploy_path != $default_deploy) and ($context == undef)) {
@@ -85,18 +71,12 @@ define tomcat::undeploy (
   }
 
   if (($symbolic_link == undef)) {
-    notify { 'Symbolic link not specified, setting default Symbolic link to no': }
     $defined_symbolic_link = 'no'
   } else {
     $defined_symbolic_link = $symbolic_link
   }
 
-  if (($symbolic_link == 'yes') and ($war_versioned == 'no')) {
-    notify { 'Symbolic link setted to yes, but deploying package is not versioned so symbolic link will be ignored': }
-  }
-
   if ($external_conf == undef) {
-    notify { 'External conf not specified, setting default External conf value to no': }
     $defined_ext_conf = 'no'
   } else {
     $defined_ext_conf = $external_conf
@@ -104,7 +84,6 @@ define tomcat::undeploy (
 
   if (($defined_ext_conf == 'yes')) {
     if ($external_conf_path == undef) {
-      notify { 'External conf path not specified, setting default External conf path to /conf/': }
       $defined_ext_conf_path = '/conf/'
     } else {
       $defined_ext_conf_path = $external_conf_path
@@ -115,143 +94,165 @@ define tomcat::undeploy (
     }
   }
 
-  exec { 'sleep': command => "sleep 10", }
+  exec { "tomcat::undeploy::sleep_undeploy::${war_name}": command => "sleep 10", }
   
   if ($defined_as_service == "no") {
-	  exec { 'shutdown':
+	  exec { "tomcat::undeploy::shutdown::${war_name}":
 	    command => "${installdir}${tomcat}-${family}.0.${update_version}/bin/shutdown.sh",
 	    onlyif  => "ps -eaf | grep ${installdir}${tomcat}-${family}.0.${update_version}",
-	    require => Exec["sleep"]
+	    require => Exec["tomcat::undeploy::sleep_undeploy::${war_name}"]
 	  }  
   } else {
-    exec { 'shutdown':
+    exec { "tomcat::undeploy::shutdown::${war_name}":
       command => "service tomcat stop",
       onlyif  => "ps -eaf | grep ${installdir}${tomcat}-${family}.0.${update_version}",
-      require => Exec["sleep"]
+      require => Exec["tomcat::undeploy::sleep_undeploy::${war_name}"]
     } 
   }
 
   if ($defined_deploy_path == $default_deploy) {
     if ($defined_war_versioned == 'no') {
-      exec { 'delete_package':
+      exec { "tomcat::undeploy::delete_package::${war_name}":
         command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}${extension}",
-        require => [Exec["sleep"], Exec["shutdown"]],
-        alias => "delete_package"
+        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"]],
+        alias => "tomcat::undeploy::delete_package::${war_name}"
       }
 
-      exec { 'delete_folder':
+      exec { "tomcat::undeploy::delete_folder::${war_name}":
         command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}",
-        require => [Exec["sleep"], Exec["shutdown"],Exec[delete_package]],
-        alias => "delete_folder"
+        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"]],
+        alias => "tomcat::undeploy::delete_folder::${war_name}"
+      }
+      
+     exec { "tomcat::undeploy::delete_work::${war_name}":
+        command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::work_path_normal}${war_name}",
+        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"],Exec["tomcat::undeploy::delete_folder::${war_name}"]],
+        alias => "tomcat::undeploy::delete_work::${war_name}"
       }
       
       if ($defined_ext_conf == 'yes') {
-	      exec { 'delete_conf':
+	      exec { "tomcat::undeploy::delete_conf::${war_name}":
 	        command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_ext_conf_path}${external_dir}",
-	        require => [Exec["sleep"], Exec["shutdown"],Exec[delete_package],Exec[delete_folder]],
-	        alias => "delete_conf"
+	        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"],Exec["tomcat::undeploy::delete_folder::${war_name}"]],
+	        alias => "tomcat::undeploy::delete_conf::${war_name}"
 	      }
       }
     } elsif ($defined_war_versioned == 'yes') {
-      exec { 'delete_package':
+      exec { "tomcat::undeploy::delete_package::${war_name}":
         command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}-${war_version}${extension}",
-        require => [Exec["sleep"], Exec["shutdown"]],
-        alias => "delete_package"
+        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"]],
+        alias => "tomcat::undeploy::delete_package::${war_name}"
       }
 
-      exec { 'delete_folder':
+      exec { "tomcat::undeploy::delete_folder::${war_name}":
         command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}-${war_version}",
-        require => [Exec["sleep"], Exec["shutdown"], Exec[delete_package]],
-        alias => "delete_folder"
+        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"], Exec["tomcat::undeploy::delete_package::${war_name}"]],
+        alias => "tomcat::undeploy::delete_folder::${war_name}"
+      }
+      
+     exec { "tomcat::undeploy::delete_work::${war_name}":
+        command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::work_path_normal}${war_name}-${war_version}",
+        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"],Exec["tomcat::undeploy::delete_folder::${war_name}"]],
+        alias => "tomcat::undeploy::delete_work::${war_name}"
       }
       
       if ($defined_ext_conf == 'yes') {
-        exec { 'delete_conf':
+        exec { "tomcat::undeploy::delete_conf::${war_name}":
           command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_ext_conf_path}${external_dir}",
-          require => [Exec["sleep"], Exec["shutdown"],Exec[delete_package],Exec[delete_folder]],
-          alias => "delete_conf"
+          require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"],Exec["tomcat::undeploy::delete_folder::${war_name}"]],
+          alias => "tomcat::undeploy::delete_conf::${war_name}"
         }
       }
     }
   } else {
     if ($defined_war_versioned == 'no') {
-      exec { 'delete_package':
+      exec { "tomcat::undeploy::delete_package::${war_name}":
         command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}${extension}",
-        require => [Exec["sleep"], Exec["shutdown"]],
-        alias => "delete_package"
+        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"]],
+        alias => "tomcat::undeploy::delete_package::${war_name}"
       }
 
-      exec { 'delete_folder':
+      exec { "tomcat::undeploy::delete_folder::${war_name}":
         command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${default_deploy}${context}",
-        require => [Exec["sleep"], Exec["shutdown"],Exec[delete_package]],
+        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"]],
         alias => "delete_folder"
       }
       
-      exec { 'delete_context_file':
+      exec { "tomcat::undeploy::delete_context_file::${war_name}":
         command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::context_path}${context}.xml",
-        require => [Exec["sleep"], Exec["shutdown"],Exec[delete_package],Exec[delete_folder]],
-        alias => "delete_context_file"
+        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"],Exec["tomcat::undeploy::delete_folder::${war_name}"]],
+        alias => "tomcat::undeploy::delete_context_file::${war_name}"
+      }
+      
+      exec { "tomcat::undeploy::delete_work::${war_name}":
+        command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::work_path_context}${context}",
+        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"],Exec["tomcat::undeploy::delete_folder::${war_name}"],Exec["tomcat::undeploy::delete_context_file::${war_name}"]],
+        alias => "tomcat::undeploy::delete_work::${war_name}"
       }
       
       if ($defined_ext_conf == 'yes') {
-        exec { 'delete_conf':
+        exec { "tomcat::undeploy::delete_conf::${war_name}":
           command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_ext_conf_path}${external_dir}",
-          require => [Exec["sleep"], Exec["shutdown"],Exec[delete_package],Exec[delete_folder], Exec[delete_context_file]],
-          alias => "delete_conf"
+          require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"],Exec["tomcat::undeploy::delete_folder::${war_name}"],Exec["tomcat::undeploy::delete_context_file::${war_name}"]],
+          alias => "tomcat::undeploy::delete_conf::${war_name}"
         }
       }
       
     } elsif ($defined_war_versioned == 'yes') {
-      exec { 'delete_package':
+      exec { "tomcat::undeploy::delete_package::${war_name}":
         command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}-${war_version}${extension}",
-        require => [Exec["sleep"], Exec["shutdown"]],
-        alias => "delete_package"
+        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"]],
+        alias => "tomcat::undeploy::delete_package::${war_name}"
       }
 
-      exec { 'delete_folder':
+      exec { "tomcat::undeploy::delete_folder::${war_name}":
         command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${default_deploy}${context}",
-        require => [Exec["sleep"], Exec["shutdown"],Exec[delete_package]],
-        alias => "delete_folder"
+        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"]],
+        alias => "tomcat::undeploy::delete_folder::${war_name}"
       }
       
-      exec { 'delete_context_file':
+      exec { "tomcat::undeploy::delete_context_file::${war_name}":
         command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::context_path}${context}.xml",
-        require => [Exec["sleep"], Exec["shutdown"],Exec[delete_package],Exec[delete_folder]],
-        alias => "delete_context_file"
+        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"],Exec["tomcat::undeploy::delete_folder::${war_name}"]],
+        alias => "tomcat::undeploy::delete_context_file::${war_name}"
+      }
+      
+      exec { "tomcat::undeploy::delete_work::${war_name}":
+        command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${tomcat::config::context_path}${context}",
+        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"],Exec["tomcat::undeploy::delete_folder::${war_name}"],Exec["tomcat::undeploy::delete_context_file::${war_name}"]],
+        alias => "tomcat::undeploy::delete_work::${war_name}"
       }
       
       if ($defined_ext_conf == 'yes') {
-        exec { 'delete_conf':
+        exec { "tomcat::undeploy::delete_conf::${war_name}":
           command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_ext_conf_path}${external_dir}",
-          require => [Exec["sleep"], Exec["shutdown"],Exec[delete_package],Exec[delete_folder], Exec[delete_context_file]],
-          alias => "delete_conf"
+          require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"],Exec["tomcat::undeploy::delete_folder::${war_name}"],Exec["tomcat::undeploy::delete_context_file::${war_name}"]],
+          alias => "tomcat::undeploy::delete_conf::${war_name}"
         }
       }
       
       if ($symbolic_link == 'yes') {
-        exec { 'delete_symbolic_link':
+        exec { "tomcat::undeploy::delete_symbolic_link::${war_name}":
           command => "rm -rf ${defined_installdir}${tomcat}-${family}.0.${update_version}${defined_deploy_path}${war_name}${extension}",
-          require => [Exec["sleep"], Exec["shutdown"],Exec[delete_package],Exec[delete_folder], Exec[delete_context_file]],
-          alias => "delete_symbolic_link"
+          require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"],Exec["tomcat::undeploy::delete_folder::${war_name}"],Exec["tomcat::undeploy::delete_context_file::${war_name}"]],
+          alias => "tomcat::undeploy::delete_symbolic_link::${war_name}"
         }
       }
     }
   }
   
-  if ($defined_as_service == 'no') {
-	  if ($restart == 'yes') {
-		  exec { 'restart':
+  if ($defined_as_service == "no") {
+	  if ($restart == "yes") {
+		  exec { "tomcat::undeploy::restart::${war_name}":
 		    command => "${installdir}${tomcat}-${family}.0.${update_version}/bin/startup.sh",
-		    onlyif  => "ps -eaf | grep ${installdir}${tomcat}-${family}.0.${update_version}",
-		    require => [Exec["sleep"], Exec["shutdown"],Exec[delete_package],Exec[delete_folder]]
+		    require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"],Exec["tomcat::undeploy::delete_folder::${war_name}"],Exec["tomcat::undeploy::delete_work::${war_name}"]]
 		   }
 	   }
   } elsif ($defined_as_service == "yes") {
-    if ($restart == 'yes') {
-      exec { "restart_tomcat":
+    if ($restart == "yes") {
+      exec {  "tomcat::undeploy::restart_tomcat::${war_name}":
         command => "service tomcat start",
-        require => [Exec["sleep"], Exec["shutdown"],Exec[delete_package],Exec[delete_folder]],
-        unless => "ls /etc/init.d/tomcat"
+        require => [Exec["tomcat::undeploy::sleep_undeploy::${war_name}"], Exec["tomcat::undeploy::shutdown::${war_name}"],Exec["tomcat::undeploy::delete_package::${war_name}"],Exec["tomcat::undeploy::delete_folder::${war_name}"],Exec["tomcat::undeploy::delete_work::${war_name}"]],
       }
     }
   }
