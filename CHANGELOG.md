@@ -1,3 +1,7 @@
+## To Be Released - Release - 1.0.5
+### Summary
+- Fix a problem on the tomcat::deploy stage in case of hot deploy disabled
+
 ## 26-10-2014 - Release - 1.0.4
 ### Summary
 - This release add the possibility to add a DB driver to Tomcat lib folder and use it for the data source configuration in tomcat::setup stage
