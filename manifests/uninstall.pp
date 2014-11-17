@@ -50,13 +50,6 @@ define tomcat::uninstall (
     }
   }
 
-  file { "$defined_installdir":
-    ensure => directory,
-    mode   => '755',
-    owner  => 'root',
-    alias  => "tomcat::setup::tomcat_home::${tomcat}-${family}.0.${update_version}"
-  }
-
   if ($as_service == "yes") {
     exec { "tomcat::uninstall::remove_tomcat_as_service::${tomcat}-${family}.0.${update_version}":
       command => "rm -rf ${$defined_installdir}${tomcat}-${family}.0.${update_version}/",
