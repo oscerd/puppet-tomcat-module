@@ -1,6 +1,7 @@
 ## To Be Released - Release - 1.0.5
 ### Summary
 - Fix a problem on the tomcat::deploy stage in case of hot deploy disabled
+- This release add a new stage to the module, tomcat::uninstall, that allow to uninstall tomcat
 
 ## 26-10-2014 - Release - 1.0.4
 ### Summary
