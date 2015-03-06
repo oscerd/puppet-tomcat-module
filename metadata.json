@@ -34,5 +34,5 @@
     }
   ],
 "summary": "The Tomcat module installs and customize Apache Tomcat on your nodes.",
-"license": "Apache 2.0"
+"license": "Apache-2.0"
 }
