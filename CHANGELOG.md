@@ -1,3 +1,8 @@
+## 06-03-2015 - Release - 1.0.6
+### Summary
+- Removed unused tests
+- Fixes warning and errors returned by puppet-lint
+
 ## 29-11-2014 - Release - 1.0.5
 ### Summary
 - Fix a problem on the tomcat::deploy stage in case of hot deploy disabled
