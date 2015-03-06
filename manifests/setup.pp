@@ -159,9 +159,9 @@ define tomcat::setup (
     }
   }
 
-  file { "${defined_installdir}":
+  file { $defined_installdir:
     ensure => directory,
-    mode   => '755',
+    mode   => '0755',
     owner  => 'root',
     alias  => "tomcat::setup::tomcat_home::${tomcat}-${family}.0.${update_version}"
   }
@@ -239,7 +239,7 @@ define tomcat::setup (
   exec { "tomcat::setup::clean_tomcat::${tomcat}-${family}.0.${update_version}":
     command   => "rm -rf ${defined_tmpdir}${tomcat}-${family}.0.${update_version}${extension}",
     require   => Exec["tomcat::setup::move_tomcat::${tomcat}-${family}.0.${update_version}"],
-    logoutput => 'false'
+    logoutput => false
   }
 
   if ($defined_as_service == 'no') {
